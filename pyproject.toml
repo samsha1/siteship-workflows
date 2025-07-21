@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "siteship_workflows"
+version = "0.1.0"
+description = ""
+authors = ["samrat <samratshakya5@gmail.com>"]
+readme = "README.md"
+packages = [{include = "siteship_workflows", from = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+apache-airflow = "^2.7.3"
+requests = "^2.32.4"
+PyGithub = "^2.6.1"
+python-dotenv = "^1.0.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
