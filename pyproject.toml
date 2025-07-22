@@ -8,7 +8,7 @@ packages = [{include = "siteship_workflows", from = "src"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
-apache-airflow = "^2.7.3"
+apache-airflow = "^3.0.3"
 requests = "^2.32.4"
 PyGithub = "^2.6.1"
 python-dotenv = "^1.0.1"
