@@ -1,9 +1,9 @@
 from datetime import datetime
-from airflow.sdk import DAG
+from airflow.sdk import dag, task
 from airflow.providers.standard.operators.python import PythonOperator
 from airflow.models import Variable
-from pipelines.tasks import unzip_file, push_to_github, deploy_to_vercel
-from pipelines.notify import notify_telegram, update_supabase_status
+# from pipelines.tasks import unzip_file, push_to_github, deploy_to_vercel
+# from pipelines.notify import notify_telegram, update_supabase_status
 
 TELEGRAM_BOT_TOKEN = Variable.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = Variable.get("TELEGRAM_CHAT_ID")
@@ -27,6 +27,19 @@ default_args = {
     "depends_on_past": False,
     'retries': 1,
 }
+
+@dag(
+    'supabase_to_vercel_pipeline',
+    default_args=default_args,
+)
+
+
+@task()
+def unzip_file(url: str, run_id: str) -> str:
+    print(f"Unzipping file from {url} for run {run_id}")
+    # Placeholder logic for unzipping
+    with_notification(unzip_file, 'Unzipping project')(url, run_id)
+    return "file unzipped"
 
 with DAG(
     'supabase_to_vercel_pipeline',

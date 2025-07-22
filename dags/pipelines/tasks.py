@@ -1,3 +1,5 @@
+
+
 def unzip_file(zip_path: str, extract_to: str) -> None:
     """
     Unzips a .zip file from zip_path to extract_to directory.
