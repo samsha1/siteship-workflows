@@ -1,10 +1,9 @@
-from airflow import DAG
-from airflow.operators.python import PythonOperator
 from datetime import datetime
-import os
+from airflow.sdk import DAG
+from airflow.providers.standard.operators.python import PythonOperator
+from airflow.models import Variable
 from pipelines.tasks import unzip_file, push_to_github, deploy_to_vercel
 from pipelines.notify import notify_telegram, update_supabase_status
-from airflow.models import Variable
 
 TELEGRAM_BOT_TOKEN = Variable.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = Variable.get("TELEGRAM_CHAT_ID")
@@ -25,6 +24,7 @@ def with_notification(task_func, status_text):
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2024, 1, 1),
+    "depends_on_past": False,
     'retries': 1,
 }
 
@@ -32,7 +32,7 @@ with DAG(
     'supabase_to_vercel_pipeline',
     default_args=default_args,
     description='Unzip Supabase file, push to Github, deploy to Vercel',
-    schedule_interval=None,
+    schedule=None,
     catchup=False,
 ) as dag:
     # Task 1: Unzip
@@ -59,4 +59,5 @@ with DAG(
         dag=dag,
     )
 
-    unzip_sb_storage_file >> github_push_code >> vercel_deploy_task 
+    unzip_sb_storage_file.set_downstream(github_push_code)
+    github_push_code.set_downstream(vercel_deploy_task)

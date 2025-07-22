@@ -7,11 +7,12 @@ readme = "README.md"
 packages = [{include = "siteship_workflows", from = "src"}]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
-apache-airflow = "^3.0.3"
+python = ">=3.11,<3.13"
 requests = "^2.32.4"
 PyGithub = "^2.6.1"
 python-dotenv = "^1.0.1"
+apache-airflow = {version = "3.0.3", extras = ["sqlite"]}
+apache-airflow-providers-fab = "^2.3.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
