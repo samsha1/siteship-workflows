@@ -126,4 +126,5 @@ with DAG(
         op_kwargs={'project_name': '{{ dag_run.conf["project_name"] }}', 'run_id': '{{ dag_run.run_id }}'},
     )
 
-    unzip_sb_storage_file >> github_push_code >> vercel_deploy_task
+    unzip_sb_storage_file.set_downstream(github_push_code)
+    github_push_code.set_downstream(vercel_deploy_task) 
