@@ -13,6 +13,7 @@ PyGithub = "^2.6.1"
 python-dotenv = "^1.0.1"
 apache-airflow = {version = "3.0.3", extras = ["sqlite"]}
 apache-airflow-providers-fab = "^2.3.0"
+twilio = "^9.6.5"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
