@@ -4,6 +4,7 @@ import zipfile
 import requests
 import tempfile
 import subprocess
+import logging
 from airflow.sdk import dag, task, DAG
 from airflow.providers.standard.operators.python import PythonOperator
 from airflow.models import Variable
@@ -15,8 +16,20 @@ SUPABASE_URL = Variable.get("SUPABASE_URL")
 SUPABASE_KEY = Variable.get("SUPABASE_KEY")
 VERCEL_ACCESS_TOKEN = Variable.get("VERCEL_ACCESS_TOKEN")
 
+# --- Logging Setup ---
+logger = logging.getLogger(__name__)
+
 # --- Notification and Status Wrapper ---
 def with_notification(task_func, status_text):
+    """_summary_
+
+    Args:
+        task_func (Function): _function to wrap with notifications and status updates_
+        status_text (str): _text to display in notifications and status updates_
+
+    Returns:
+        function: _wrapper function that adds notification and status update logic
+    """
     def wrapper(*args, **kwargs):
         notify_telegram(f"🚀 Step started: {status_text}", TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)
         update_supabase_status(kwargs['run_id'], status_text, SUPABASE_URL, SUPABASE_KEY)
@@ -28,7 +41,17 @@ def with_notification(task_func, status_text):
 
 # --- Functions Implementation ---
 def unzip_file(url, run_id):
-    print(f"[{run_id}] Downloading file from {url}")
+    
+    """ Downloads a zip file from a supabase storageURL and unzips it to a temporary directory.
+
+    Args:
+        url (str): The URL of the zip file to download.
+        run_id (str): The run ID for logging and tracking.
+
+    Raises:
+        Exception: If the download fails or the zip file cannot be extracted.
+    """
+    logger.info(f"[{run_id}] Downloading file from {url}")
     response = requests.get(url)
     if response.status_code != 200:
         raise Exception(f"Failed to download zip file. Status: {response.status_code}")
@@ -38,13 +61,13 @@ def unzip_file(url, run_id):
         with open(zip_path, "wb") as f:
             f.write(response.content)
 
-        print(f"[{run_id}] Unzipping to {tmpdir}")
+        logger.info(f"[{run_id}] Unzipping to {tmpdir}")
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall("unzipped_project")  # keep unzipped path static for downstream use
 
 def push_to_github(repo, run_id):
     repo_path = "unzipped_project"
-    print(f"[{run_id}] Initializing Git repo at {repo_path}")
+    logger.info(f"[{run_id}] Initializing Git repo at {repo_path}")
 
     subprocess.run(["git", "init"], cwd=repo_path, check=True)
     subprocess.run(["git", "remote", "add", "origin", repo], cwd=repo_path, check=True)
@@ -53,7 +76,7 @@ def push_to_github(repo, run_id):
     subprocess.run(["git", "push", "-u", "origin", "master", "--force"], cwd=repo_path, check=True)
 
 def deploy_to_vercel(project_name, run_id):
-    print(f"[{run_id}] Triggering Vercel deployment for {project_name}")
+    logger.info(f"[{run_id}] Triggering Vercel deployment for {project_name}")
     vercel_url = f"https://api.vercel.com/v13/deployments"
     headers = {"Authorization": f"Bearer {VERCEL_ACCESS_TOKEN}"}
     payload = {
@@ -75,7 +98,7 @@ def notify_telegram(message, bot_token, chat_id):
     }
     response = requests.post(url, json=payload)
     if not response.ok:
-        print(f"Telegram notification failed: {response.text}")
+        logger.info(f"Telegram notification failed: {response.text}")
 
 def update_supabase_status(run_id, status, supabase_url, supabase_key):
     url = f"{supabase_url}/rest/v1/deploy_status"
@@ -91,7 +114,7 @@ def update_supabase_status(run_id, status, supabase_url, supabase_key):
     }
     response = requests.post(url, json=payload, headers=headers)
     if not response.ok:
-        print(f"Supabase status update failed: {response.status_code}, {response.text}")
+        logger.info(f"Supabase status update failed: {response.status_code}, {response.text}")
 
 # --- DAG Definition ---
 default_args = {
