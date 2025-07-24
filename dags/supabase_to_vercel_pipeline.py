@@ -11,9 +11,13 @@ from airflow.models import Variable
 from github import Github
 from github.InputGitTreeElement import InputGitTreeElement
 from twilio.rest import Client as TwilioClient
+# from _scproxy import _get_proxy_settings
+
 
 # --- Logging Setup ---
 logger = logging.getLogger(__name__)
+os.environ['NO_PROXY'] = '*'  # Disable proxy for requests
+# _get_proxy_settings()
 
 # --- Airflow Variables ---
 TELEGRAM_BOT_TOKEN = Variable.get("TELEGRAM_BOT_TOKEN", default_var=None)
@@ -115,7 +119,7 @@ def push_to_github(unzipped_file_dir: str, username: str) -> str:
 @with_notification("Deploying to Vercel", MESSAGE_TO)
 def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
     """Deploys a branch to Vercel and returns the deployment URL."""
-    url = "https://api.vercel.com/v13/deployments"
+    url = "https://api.vercel.com/v6/deployments"
     payload = {
         "name": project_name,
         "target": "production",
@@ -126,12 +130,14 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
             "org": username
         }
     }
+    logger.info(f"Payload for Vercel deployment: {payload}")
     if VERCEL_TEAM:
         url += f"?teamId={VERCEL_TEAM}"
 
     logger.info(f"Creating deployment for branch: {branch}")
-    response = requests.post(url, headers=VERCEL_HEADERS, json=payload)
-    response.raise_for_status()
+    response = requests.post(url, headers=VERCEL_HEADERS, json=payload,timeout=60)
+    
+    # response.raise_for_status()
     deployment = response.json()
 
     deployment_id = deployment["id"]
@@ -143,7 +149,7 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
     while status in ["INITIALIZING", "BUILDING", "QUEUED"]:
         time.sleep(5)
         status_resp = requests.get(
-            f"https://api.vercel.com/v13/deployments/{deployment_id}",
+            f"https://api.vercel.com/v6/deployments/{deployment_id}",
             headers=VERCEL_HEADERS,
             timeout=120
         )
@@ -157,7 +163,7 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
         logger.info(f"Deployment successful: https://{deployment_url}")
         alias = f"{branch}-{username}.vercel.app"
         alias_resp = requests.post(
-            f"https://api.vercel.com/v2/deployments/{deployment_id}/aliases",
+            f"https://api.vercel.com/v6/deployments/{deployment_id}/aliases",
             headers=VERCEL_HEADERS,
             json={"alias": alias},
             timeout=120
