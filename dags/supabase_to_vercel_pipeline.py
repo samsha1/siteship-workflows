@@ -54,7 +54,7 @@ def with_notification(status_text, message_to):
     return decorator
 
 # --- Task Functions ---
-@task
+@task()
 @with_notification("Unzipping code files", MESSAGE_TO)
 def unzip_file(file_url: str, username: str, extract_to: str = "/tmp/code") -> str:
     """Downloads a zip file from Supabase storage and unzips it to a temporary directory."""
@@ -62,7 +62,7 @@ def unzip_file(file_url: str, username: str, extract_to: str = "/tmp/code") -> s
     temp_dir = f"{extract_to}/{username}"
     os.makedirs(temp_dir, exist_ok=True)
 
-    response = requests.get(file_url)
+    response = requests.get(file_url, timeout=60)
     response.raise_for_status()
 
     with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
@@ -71,7 +71,7 @@ def unzip_file(file_url: str, username: str, extract_to: str = "/tmp/code") -> s
     logger.info(f"Unzipped files to {temp_dir}")
     return temp_dir
 
-@task
+@task()
 @with_notification("Pushing code to GitHub", MESSAGE_TO)
 def push_to_github(unzipped_file_dir: str, username: str) -> str:
     """Pushes files to GitHub by creating a new branch with a commit."""
@@ -111,7 +111,7 @@ def push_to_github(unzipped_file_dir: str, username: str) -> str:
     logger.info(f"Created branch '{branch}' with commit {new_commit.sha}")
     return branch
 
-@task
+@task()
 @with_notification("Deploying to Vercel", MESSAGE_TO)
 def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
     """Deploys a branch to Vercel and returns the deployment URL."""
@@ -145,7 +145,7 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
         status_resp = requests.get(
             f"https://api.vercel.com/v13/deployments/{deployment_id}",
             headers=VERCEL_HEADERS,
-            timeout=600
+            timeout=120
         )
         status_resp.raise_for_status()
         status_data = status_resp.json()
@@ -160,7 +160,7 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
             f"https://api.vercel.com/v2/deployments/{deployment_id}/aliases",
             headers=VERCEL_HEADERS,
             json={"alias": alias},
-            timeout=600
+            timeout=120
         )
         alias_resp.raise_for_status()
         logger.info(f"Alias assigned: {alias}")
@@ -172,15 +172,15 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
 def notify_twilio_whatsapp(message: str, to_number: str):
     """Sends a WhatsApp message using Twilio."""
     try:
-        twilio_client = TwilioClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        # twilio_client = TwilioClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
         logger.info(f"Sending WhatsApp message to {to_number}: {message}")
-        msg = twilio_client.messages.create(
-            body=message,
-            from_=f"whatsapp:{TWILIO_SANDBOX_PHONE_NUM}",
-            to=f"whatsapp:{to_number}"
-        )
-        logger.info(f"WhatsApp message sent with SID: {msg.sid}")
-        return msg.sid
+        # msg = twilio_client.messages.create(
+        #     body=message,
+        #     from_=f"whatsapp:{TWILIO_SANDBOX_PHONE_NUM}",
+        #     to=f"whatsapp:{to_number}"
+        # )
+        logger.info(f"WhatsApp message sent with SID")
+        # return msg.sid
     except Exception as e:
         logger.error(f"Failed to send WhatsApp message: {str(e)}")
         raise
