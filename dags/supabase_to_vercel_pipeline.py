@@ -35,15 +35,9 @@ GITHUB_REPO = Variable.get("GITHUB_REPO")
 GITHUB_ACCESS_TOKEN = Variable.get("GITHUB_ACCESS_TOKEN")
 MESSAGE_TO = Variable.get("NOTIFICATION_PHONE", default_var="+9779867397267")  # Configurable phone number
 
-HTTP_PROXIES = {
-    "http": None,
-    "https": None
-}
 
-VERCEL_HEADERS = {
-    "Authorization": f"Bearer {VERCEL_ACCESS_TOKEN}",
-    "Content-Type": "application/json"
-}
+
+
 
 # --- Notification Wrapper ---
 def with_notification(status_text, message_to):
@@ -68,10 +62,14 @@ def with_notification(status_text, message_to):
 def unzip_file(file_url: str, username: str, extract_to: str = "/tmp/code") -> str:
     """Downloads a zip file from Supabase storage and unzips it to a temporary directory."""
     logger.info(f"Downloading file from {file_url} for user {username}")
+    # HTTP_PROXIES = {
+    #     "http": 'http://materialisting:11ZoYAiymG5qOupH_country-Sweden_session-s5TQunQ4@proxy.packetstream.io:31112',
+    #     "https": 'http://materialisting:11ZoYAiymG5qOupH_country-Sweden_session-s5TQunQ4@proxy.packetstream.io:31112'
+    # }
     temp_dir = f"{extract_to}/{username}"
     os.makedirs(temp_dir, exist_ok=True)
     os.environ['NO_PROXY'] = '*'  # Disable proxy for requests
-    response = requests.get(file_url, timeout=60,proxies=HTTP_PROXIES, allow_redirects=True)
+    response = requests.get(file_url, timeout=30)
     response.raise_for_status()
 
     with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
@@ -138,7 +136,10 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
     logger.info(f"Payload for Vercel deployment: {payload}")
     if VERCEL_TEAM:
         url += f"?teamId={VERCEL_TEAM}"
-
+    VERCEL_HEADERS = {
+        "Authorization": f"Bearer {VERCEL_ACCESS_TOKEN}",
+        "Content-Type": "application/json"
+    }
     logger.info(f"Creating deployment for branch: {branch}")
     response = requests.post(url, headers=VERCEL_HEADERS, json=payload,timeout=60, proxies=HTTP_PROXIES, allow_redirects=True)
     
