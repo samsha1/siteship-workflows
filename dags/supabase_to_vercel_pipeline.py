@@ -35,6 +35,11 @@ GITHUB_REPO = Variable.get("GITHUB_REPO")
 GITHUB_ACCESS_TOKEN = Variable.get("GITHUB_ACCESS_TOKEN")
 MESSAGE_TO = Variable.get("NOTIFICATION_PHONE", default_var="+9779867397267")  # Configurable phone number
 
+HTTP_PROXIES = {
+    "http": None,
+    "https": None
+}
+
 VERCEL_HEADERS = {
     "Authorization": f"Bearer {VERCEL_ACCESS_TOKEN}",
     "Content-Type": "application/json"
@@ -65,8 +70,8 @@ def unzip_file(file_url: str, username: str, extract_to: str = "/tmp/code") -> s
     logger.info(f"Downloading file from {file_url} for user {username}")
     temp_dir = f"{extract_to}/{username}"
     os.makedirs(temp_dir, exist_ok=True)
-
-    response = requests.get(file_url, timeout=60)
+    os.environ['NO_PROXY'] = '*'  # Disable proxy for requests
+    response = requests.get(file_url, timeout=60,proxies=HTTP_PROXIES, allow_redirects=True)
     response.raise_for_status()
 
     with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
@@ -135,7 +140,7 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
         url += f"?teamId={VERCEL_TEAM}"
 
     logger.info(f"Creating deployment for branch: {branch}")
-    response = requests.post(url, headers=VERCEL_HEADERS, json=payload,timeout=60)
+    response = requests.post(url, headers=VERCEL_HEADERS, json=payload,timeout=60, proxies=HTTP_PROXIES, allow_redirects=True)
     
     # response.raise_for_status()
     deployment = response.json()
@@ -151,7 +156,8 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
         status_resp = requests.get(
             f"https://api.vercel.com/v6/deployments/{deployment_id}",
             headers=VERCEL_HEADERS,
-            timeout=120
+            timeout=120,
+            proxies=HTTP_PROXIES, allow_redirects=True
         )
         status_resp.raise_for_status()
         status_data = status_resp.json()
@@ -166,7 +172,8 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
             f"https://api.vercel.com/v6/deployments/{deployment_id}/aliases",
             headers=VERCEL_HEADERS,
             json={"alias": alias},
-            timeout=120
+            timeout=120,
+            proxies=HTTP_PROXIES, allow_redirects=True
         )
         alias_resp.raise_for_status()
         logger.info(f"Alias assigned: {alias}")
