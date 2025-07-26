@@ -14,6 +14,7 @@ python-dotenv = "^1.0.1"
 apache-airflow = {version = "3.0.3", extras = ["sqlite"]}
 apache-airflow-providers-fab = "^2.3.0"
 twilio = "^9.6.5"
+apache-airflow-providers-github = "^2.9.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
