@@ -73,7 +73,7 @@ def unzip_file(file_url: str, username: str, extract_to: str = "/tmp/code") -> s
     logger.info(f"Downloading file from {file_url} for user {username}")
     os.environ['NO_PROXY'] = '*'  # Disable proxy for requests
     try:
-      response = requests.get(file_url, timeout=30)
+      response = requests.get(file_url, timeout=30,verify=False, allow_redirects=True,proxies={ 'http': None, 'https': None})
       response.raise_for_status()
     except Exception as e:
       logger.error(f"Failed to download file: {e}")
@@ -95,20 +95,22 @@ def push_to_github(unzipped_file_dir: str, username: str) -> str:
 
     # Initialize local git repository if not already initialized
     repo_path = unzipped_file_dir
-    # if not os.path.exists(os.path.join(repo_path, '.git')):
-    #     os.system(f"git -C {repo_path} init")
-    #     os.system(f"git -C {repo_path} remote add origin https://github.com/{GITHUB_REPO}.git")
-
+    if not os.path.exists(os.path.join(repo_path, '.git')):
+        os.system(f"git -C {repo_path} init")
+        os.system(f"git -C {repo_path} remote add origin https://github.com/{GITHUB_REPO}.git")
+    method_args = {
+        "branch": branch,
+        "files": [os.path.relpath(os.path.join(root, f), repo_path) for root, _, files in os.walk(repo_path) for f in files],
+        "local_path": unzipped_file_dir,
+        "repo": GITHUB_REPO,
+        "commit_message": f"Deploy {branch}"
+    }
     # Use GitHubOperator to commit and push files
     github_op = GithubOperator(
         task_id='push_to_github_internal',
         github_method='create_commit',
-        github_conn_id='github_default',  # Airflow connection ID for GitHub
-        repo=GITHUB_REPO,  # e.g., "username/repository"
-        branch=branch,
-        commit_message=f"Deploy {branch}",
-        files=[os.path.relpath(os.path.join(root, f), repo_path) for root, _, files in os.walk(repo_path) for f in files],
-        local_path=repo_path,
+        github_conn_id=GITHUB_ACCESS_TOKEN,
+        github_method_args=method_args,
     )
     github_op.execute(context={})
     logger.info(f"Created branch '{branch}'")
