@@ -89,7 +89,7 @@ def push_to_github(unzipped_file_dir: str, username: str) -> str:
     repo = g.get_repo(GITHUB_REPO)
 
     # Create a unique branch name
-    branch = f"{username}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    branch = f"{username}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     logger.info(f"Creating branch {branch}")
 
     # Get default branch ref
@@ -156,7 +156,7 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
     status = deployment["readyState"]
     deployment_url = None
     while status in ["INITIALIZING", "BUILDING", "QUEUED"]:
-        time.sleep(5)
+        time.sleep(3)
         status_resp = requests.get(
             f"https://api.vercel.com/v6/deployments/{deployment_id}",
             headers=VERCEL_HEADERS,
@@ -180,7 +180,7 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
             proxies=HTTP_PROXIES, allow_redirects=True
         )
         alias_resp.raise_for_status()
-        logger.info(f"Alias assigned: {alias}")
+        logger.info(f"Alias assigned: https://{alias}")
         return f"https://{alias}"
     else:
         logger.error(f"Deployment failed: status {status}")
@@ -197,7 +197,6 @@ def notify_twilio_whatsapp(message: str, to_number: str):
             to=f"whatsapp:{to_number}"
         )
         logger.info(f"WhatsApp message sent with SID: {msg.sid}")
-        return msg.sid
     except Exception as e:
         logger.error(f"Failed to send WhatsApp message: {str(e)}")
         raise
@@ -222,7 +221,10 @@ def supabase_to_vercel_pipeline():
     # Task instances
     unzipped_dir = unzip_file(file_url=conf["url"], username=conf["username"])
     branch = push_to_github(unzipped_file_dir=unzipped_dir, username=conf["username"])
-    deploy_to_vercel(branch=branch, project_name=conf["project_name"], username=conf["username"])
+    final_alias_url = deploy_to_vercel(branch=branch, project_name=conf["project_name"], username=conf["username"])
+    notify_twilio_whatsapp(
+        message=f"🚀 Deployment completed! Your project is live at {final_alias_url}",
+        to_number=MESSAGE_TO)
 
 # Instantiate the DAG
 supabase_to_vercel_pipeline()
