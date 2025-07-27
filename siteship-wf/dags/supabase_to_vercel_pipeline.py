@@ -33,7 +33,7 @@ TWILIO_PRD_PHONE_NUM = Variable.get("TWILIO_PHONE_NUM", default_var=None)
 TWILIO_SANDBOX_PHONE_NUM = Variable.get("TWILIO_SANDBOX_PHONE_NUM", default_var=None)
 GITHUB_REPO = Variable.get("GITHUB_REPO")
 GITHUB_ACCESS_TOKEN = Variable.get("GITHUB_ACCESS_TOKEN")
-MESSAGE_TO = Variable.get("NOTIFICATION_PHONE", default_var="+9779867397267")  # Configurable phone number
+MESSAGE_TO = Variable.get("NOTIFICATION_PHONE")  # Configurable phone number
 
 
 HTTP_PROXIES = {
@@ -145,9 +145,9 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
     }
     logger.info(f"Creating deployment for branch: {branch}")
     response = requests.post(url, headers=VERCEL_HEADERS, json=payload,timeout=60, proxies=HTTP_PROXIES, allow_redirects=True)
-    
     # response.raise_for_status()
     deployment = response.json()
+    logger.info(f"Vercel response status code: {deployment}")
 
     deployment_id = deployment["id"]
     logger.info(f"Deployment created: ID {deployment_id}, status {deployment['status']}")
@@ -189,15 +189,15 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
 def notify_twilio_whatsapp(message: str, to_number: str):
     """Sends a WhatsApp message using Twilio."""
     try:
-        # twilio_client = TwilioClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        twilio_client = TwilioClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
         logger.info(f"Sending WhatsApp message to {to_number}: {message}")
-        # msg = twilio_client.messages.create(
-        #     body=message,
-        #     from_=f"whatsapp:{TWILIO_SANDBOX_PHONE_NUM}",
-        #     to=f"whatsapp:{to_number}"
-        # )
-        logger.info(f"WhatsApp message sent with SID")
-        # return msg.sid
+        msg = twilio_client.messages.create(
+            body=message,
+            from_=f"whatsapp:{TWILIO_SANDBOX_PHONE_NUM}",
+            to=f"whatsapp:{to_number}"
+        )
+        logger.info(f"WhatsApp message sent with SID: {msg.sid}")
+        return msg.sid
     except Exception as e:
         logger.error(f"Failed to send WhatsApp message: {str(e)}")
         raise
