@@ -61,7 +61,7 @@ def with_notification(status_text, message_to):
 
 # --- Task Functions ---
 @task()
-@with_notification("Unzipping code files", MESSAGE_TO)
+# @with_notification("Unzipping code files", MESSAGE_TO)
 def unzip_file(file_url: str, username: str, extract_to: str = "/tmp/code") -> str:
     """Downloads a zip file from Supabase storage and unzips it to a temporary directory."""
     logger.info(f"Downloading file from {file_url} for user {username}")
@@ -82,7 +82,7 @@ def unzip_file(file_url: str, username: str, extract_to: str = "/tmp/code") -> s
     return temp_dir
 
 @task()
-@with_notification("Pushing code to GitHub", MESSAGE_TO)
+# @with_notification("Pushing code to GitHub", MESSAGE_TO)
 def push_to_github(unzipped_file_dir: str, username: str) -> str:
     """Pushes files to GitHub by creating a new branch with a commit."""
     g = Github(GITHUB_ACCESS_TOKEN)
@@ -122,7 +122,7 @@ def push_to_github(unzipped_file_dir: str, username: str) -> str:
     return branch
 
 @task()
-@with_notification("Deploying to Vercel", MESSAGE_TO)
+# @with_notification("Deploying to Vercel", MESSAGE_TO)
 def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
     """Deploys a branch to Vercel and returns the deployment URL."""
     url = "https://api.vercel.com/v6/deployments"
