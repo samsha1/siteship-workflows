@@ -197,9 +197,23 @@ def notify_twilio_whatsapp(message: str, to_number: str):
             to=f"whatsapp:{to_number}"
         )
         logger.info(f"WhatsApp message sent with SID: {msg.sid}")
+        return msg.sid
     except Exception as e:
         logger.error(f"Failed to send WhatsApp message: {str(e)}")
         raise
+    
+    
+@task()
+def send_final_notification(alias_url: str):
+    """Sends a final WhatsApp notification with the deployment URL."""
+    message = f"🚀 Deployment completed! Your project is live at {alias_url}" if alias_url else "❌ Deployment failed: No URL available"
+    notify_twilio_whatsapp(message=message, to_number=MESSAGE_TO)
+
+@task()
+def cleanup_temp_dir(temp_dir: str):
+    import shutil
+    logger.info(f"Cleaning up temporary directory {temp_dir}")
+    shutil.rmtree(temp_dir, ignore_errors=True)
 
 # --- DAG Definition ---
 @dag(
@@ -222,9 +236,8 @@ def supabase_to_vercel_pipeline():
     unzipped_dir = unzip_file(file_url=conf["url"], username=conf["username"])
     branch = push_to_github(unzipped_file_dir=unzipped_dir, username=conf["username"])
     final_alias_url = deploy_to_vercel(branch=branch, project_name=conf["project_name"], username=conf["username"])
-    notify_twilio_whatsapp(
-        message=f"🚀 Deployment completed! Your project is live at {final_alias_url}",
-        to_number=MESSAGE_TO)
+    send_final_notification(final_alias_url)
+    cleanup_temp_dir(unzipped_dir)
 
 # Instantiate the DAG
 supabase_to_vercel_pipeline()
