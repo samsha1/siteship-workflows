@@ -133,7 +133,7 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
             "type": "github",
             "repo": VERCEL_GITHUB_REPO,
             "ref": branch,
-            "org": username
+            "org": 'samsha1'
         }
     }
     logger.info(f"Payload for Vercel deployment: {payload}")
@@ -150,10 +150,10 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
     logger.info(f"Vercel response status code: {deployment}")
 
     deployment_id = deployment["id"]
-    logger.info(f"Deployment created: ID {deployment_id}, status {deployment['status']}")
+    logger.info(f"Deployment created: ID {deployment_id}, status {deployment['readyState']}")
 
     # Poll for deployment status
-    status = deployment["status"]
+    status = deployment["readyState"]
     deployment_url = None
     while status in ["INITIALIZING", "BUILDING", "QUEUED"]:
         time.sleep(5)
@@ -165,7 +165,7 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
         )
         status_resp.raise_for_status()
         status_data = status_resp.json()
-        status = status_data["status"]
+        status = status_data.get("readyState")
         deployment_url = status_data.get("url")
         logger.info(f"Deployment status: {status}")
 
