@@ -236,8 +236,9 @@ def supabase_to_vercel_pipeline():
     unzipped_dir = unzip_file(file_url=conf["url"], username=conf["username"])
     branch = push_to_github(unzipped_file_dir=unzipped_dir, username=conf["username"])
     final_alias_url = deploy_to_vercel(branch=branch, project_name=conf["project_name"], username=conf["username"])
-    send_final_notification(final_alias_url)
-    cleanup_temp_dir(unzipped_dir)
-
+    final_notification = send_final_notification(final_alias_url)    
+    cleanup = cleanup_temp_dir(unzipped_dir)
+    # Set task dependencies
+    cleanup.set_upstream(final_notification)
 # Instantiate the DAG
 supabase_to_vercel_pipeline()
