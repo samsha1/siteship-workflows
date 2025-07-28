@@ -83,7 +83,7 @@ def unzip_file(file_url: str, username: str, extract_to: str = "/tmp/code") -> s
 
 @task()
 # @with_notification("Pushing code to GitHub", MESSAGE_TO)
-def push_to_github(unzipped_file_dir: str, username: str) -> str:
+def push_to_github(unzipped_file_dir: str, username: str,project_name: str) -> str:
     """Pushes files to GitHub by creating a new branch with a commit."""
     g = Github(GITHUB_ACCESS_TOKEN)
     repo = g.get_repo(GITHUB_REPO)
@@ -171,7 +171,7 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
 
     if status == "READY":
         logger.info(f"Deployment successful: https://{deployment_url}")
-        alias = f"{branch}-{username}.vercel.app"
+        alias = f"{project_name}-{branch}.vercel.app"
         alias_resp = requests.post(
             f"https://api.vercel.com/v6/deployments/{deployment_id}/aliases",
             headers=VERCEL_HEADERS,
