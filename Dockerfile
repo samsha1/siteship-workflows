@@ -1,7 +1,9 @@
+# -----------------------------
 # Stage 1: Builder
-FROM python:3.10-slim as builder
+# -----------------------------
+FROM python:3.11-slim as builder
 
-# Install system dependencies
+# System dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     curl \
@@ -11,28 +13,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 - \
-    && mv /root/.local /opt/poetry \
-    && ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry
+# Install Poetry system-wide
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 -
 
-ENV PATH="/usr/local/bin:/opt/poetry/bin:$PATH"
+ENV PATH="/opt/poetry/bin:$PATH"
 
 WORKDIR /app
 
 # Copy dependency files
 COPY pyproject.toml poetry.lock* ./
 
-# Configure Poetry to install in the same environment
-RUN poetry config virtualenvs.create false
+# Install dependencies into system environment, excluding the project
+RUN poetry cache clear --all pypi \
+    && poetry config virtualenvs.create false \
+    && poetry install --only main --no-interaction --no-ansi -vvv
 
-# Install dependencies
-RUN poetry install --no-interaction --no-ansi
-
+# -----------------------------
 # Stage 2: Final Airflow image
-FROM apache/airflow:3.1.1-python3.11
+# -----------------------------
+FROM apache/airflow:3.0.3
 
-# Switch to root to install system dependencies
+# System dependencies required at runtime
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
@@ -40,20 +41,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy installed Python packages from builder
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
 USER airflow
 WORKDIR /opt/airflow
 
-# Copy installed Python packages from builder
-COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Copy DAGs and plugins
+# Copy DAGs and other necessary files
 COPY dags/ /opt/airflow/dags/
+COPY siteship-wf/ /opt/airflow/siteship-wf/
 # COPY plugins/ /opt/airflow/plugins/
 
 # Set environment variables
 ENV AIRFLOW_HOME=/opt/airflow
-ENV PYTHONPATH="${AIRFLOW_HOME}"
+ENV PYTHONPATH="${AIRFLOW_HOME}:${AIRFLOW_HOME}/siteship-wf"
 
 EXPOSE 8080
 
