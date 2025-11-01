@@ -70,39 +70,30 @@ docs/_build/
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# IPython
-profile_default/
-ipython_config.py
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
 
-# pyenv
+# Logs
+logs/
+*.log
+
+# Project specific
+.vector_cache/
+temp/*
+tmp/*
 .python-version
 
-# pipenv
-Pipfile.lock
+# Ignore project.toml locally but keep tracking it in the repository
+/project.toml
+pyproject_local.toml
 
-# poetry
+/certs
+env.json
+siteship-wtf-*/
+_Dockerfile.bk
 poetry.lock
-
-# mypy
-.mypy_cache/
-.dmypy.json
-.dmypy-working/
-
-# Pyre type checker
-.pyre/
-
-# VS Code
-.vscode/
-
-# Airflow
-airflow.db
-airflow.cfg
-logs/
-
-# Virtualenv
-.venv/
-venv/
-ENV/
-
-# Mac
-.DS_Store 
