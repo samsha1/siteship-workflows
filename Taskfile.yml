@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  bump-version:
+    preconditions:
+      - sh: '[ {{.ver}} = "patch" ] || [ {{.ver}} = "minor" ] || [ {{.ver}} = "major" ]'
+        msg: Expected 'patch', 'minor' or 'major' as arguments
+    cmds:
+      - TAG_VERSION=v`cat .version` && bumpversion --no-tag {{.ver}}
+      - VERSION=`cat .version` && [ `git ls-remote origin refs/tags/v${VERSION} | wc -l` = "0" ]
+      - TAG_VERSION=v`cat .version` && git tag ${TAG_VERSION} && git push --tags
+      - echo "The new version is v`cat .version`"
