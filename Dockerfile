@@ -49,7 +49,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy DAGs and plugins
 COPY dags/ /opt/airflow/dags/
-COPY plugins/ /opt/airflow/plugins/
+# COPY plugins/ /opt/airflow/plugins/
 
 # Set environment variables
 ENV AIRFLOW_HOME=/opt/airflow
