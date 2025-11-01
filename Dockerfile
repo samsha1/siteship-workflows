@@ -41,7 +41,7 @@ RUN poetry install --no-interaction --no-ansi
 
 # Copy DAGs and plugins
 COPY dags/ /opt/airflow/dags/
-COPY plugins/ /opt/airflow/plugins/
+# COPY plugins/ /opt/airflow/plugins/
 
 # Environment variables
 ENV AIRFLOW_HOME=/opt/airflow
