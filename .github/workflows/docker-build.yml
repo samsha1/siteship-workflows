@@ -34,5 +34,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/siteship-api:latest
-            ghcr.io/${{ github.repository_owner }}/siteship-api:${{ env.TAG }}
+            ghcr.io/${{ github.repository_owner }}/siteship-workflows:latest
+            ghcr.io/${{ github.repository_owner }}/siteship-workflows:${{ env.TAG }}
