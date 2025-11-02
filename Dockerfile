@@ -62,4 +62,4 @@ ENV PYTHONPATH="${AIRFLOW_HOME}:${AIRFLOW_HOME}/siteship-wf"
 EXPOSE 8080
 
 ENTRYPOINT ["/entrypoint"]
-CMD ["webserver"]
+CMD ["api-server"]
