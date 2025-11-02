@@ -39,11 +39,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     libssl-dev \
     libffi-dev \
+    python3.11 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy installed Python packages from builder
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libpython3.11.so* /usr/lib/x86_64-linux-gnu/
 
 USER airflow
 WORKDIR /opt/airflow
