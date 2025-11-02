@@ -31,7 +31,7 @@ RUN poetry cache clear --all pypi \
 # -----------------------------
 # Stage 2: Final Airflow image
 # -----------------------------
-FROM apache/airflow:3.0.3
+FROM apache/airflow:3.1.1-python3.11
 
 # System dependencies required at runtime
 USER root
