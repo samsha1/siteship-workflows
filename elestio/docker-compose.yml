@@ -5,6 +5,7 @@ services:
     image: ghcr.io/samsha1/siteship-workflows:${SOFTWARE_VERSION_TAG}
     container_name: siteship-workflows
     restart: always
+    env_file: .env
     depends_on:
       - postgres
       - redis
@@ -14,18 +15,41 @@ services:
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
       AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
       AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__VARIABLES__SUPABASE_URL: ${SUPABASE_URL}
+      AIRFLOW__VARIABLES__SUPABASE_KEY: ${SUPABASE_KEY}
+      AIRFLOW__VARIABLES__GHCR_USERNAME: ${GHCR_USERNAME}
+      AIRFLOW__VARIABLES__GHCR_PAT: ${GHCR_PAT}
+      AIRFLOW__VARIABLES__GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
+      AIRFLOW__VARIABLES__SUPABASE_DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
+      AIRFLOW__VARIABLES__GEMINI_API_KEY: ${GEMINI_API_KEY}
+      AIRFLOW__VARIABLES__EMBEDDING_MODEL: ${EMBEDDING_MODEL}
+      AIRFLOW__VARIABLES__COMPLETION_MODEL: ${COMPLETION_MODEL}
+      AIRFLOW__VARIABLES__OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AIRFLOW__VARIABLES__TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      AIRFLOW__VARIABLES__VERCEL_ACCESS_TOKEN: ${VERCEL_ACCESS_TOKEN}
+      AIRFLOW__VARIABLES__NOTIFICATION_PHONE: ${NOTIFICATION_PHONE}
+      AIRFLOW__VARIABLES__TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      AIRFLOW__VARIABLES__TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      AIRFLOW__VARIABLES__TWILIO_SANDBOX_PHONE_NUM: ${TWILIO_SANDBOX_PHONE_NUM}
+      AIRFLOW__VARIABLES__TWILIO_PHONE_NUM: ${TWILIO_PHONE_NUM}
+      AIRFLOW__VARIABLES__VERCEL_GITHUB_REPO: ${VERCEL_GITHUB_REPO}
+      AIRFLOW__VARIABLES__GITHUB_REPO: ${GITHUB_REPO}
+      AIRFLOW__CORE__FERNET_KEY: "hqfbPPaBNil6v3SzrGM7qqgx-1A9QkLrQnDEktKL8aE="
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
 
       # Webserver Auth
       _AIRFLOW_WWW_USER_CREATE: "true"
-      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_USERNAME: airflow
       _AIRFLOW_WWW_USER_PASSWORD: ${ADMIN_PASSWORD}
       _AIRFLOW_WWW_USER_EMAIL: ${ADMIN_EMAIL}
       _AIRFLOW_WWW_USER_FIRSTNAME: Air
       _AIRFLOW_WWW_USER_LASTNAME: Flow
 
       # Other useful vars
-      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-      AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "true"
+      AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"
+      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://airflow-apiserver:8080/execution/"
+      AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
 
       # Optional for Elestio deployment
       TZ: UTC
@@ -35,28 +59,34 @@ services:
       - 172.17.0.1:8080:8080
 
     volumes:
-      - ./dags:/opt/airflow/dags
+    #   - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
 
     command: >
-      bash -c "
+      bash -c '
         airflow db migrate &&
-        if [ \"${_AIRFLOW_WWW_USER_CREATE}\" = 'true' ]; then
-          airflow users create \
-            --username ${_AIRFLOW_WWW_USER_USERNAME} \
+        airflow users create \
+            --username admin \
             --firstname ${_AIRFLOW_WWW_USER_FIRSTNAME} \
             --lastname ${_AIRFLOW_WWW_USER_LASTNAME} \
             --role Admin \
             --email ${_AIRFLOW_WWW_USER_EMAIL} \
-            --password ${_AIRFLOW_WWW_USER_PASSWORD} || true;
-        fi &&
+            --password ${_AIRFLOW_WWW_USER_PASSWORD} || true; 
         airflow api-server
-      "
+      '
+    deploy:
+        resources:
+            limits:
+              cpus: '0.5'
+              memory: 512M
+    networks:
+      - airflow
 
   scheduler:
-    image: ghcr.io/samsha1/siteship-workflows:v0.0.11
+    image: ghcr.io/samsha1/siteship-workflows:${SOFTWARE_VERSION_TAG}
     container_name: siteship-scheduler
     restart: always
+    env_file: .env
     depends_on:
       - postgres
       - redis
@@ -65,12 +95,91 @@ services:
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
       AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
       AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__VARIABLES__SUPABASE_URL: ${SUPABASE_URL}
+      AIRFLOW__VARIABLES__SUPABASE_KEY: ${SUPABASE_KEY}
+      AIRFLOW__VARIABLES__GHCR_USERNAME: ${GHCR_USERNAME}
+      AIRFLOW__VARIABLES__GHCR_PAT: ${GHCR_PAT}
+      AIRFLOW__VARIABLES__GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
+      AIRFLOW__VARIABLES__SUPABASE_DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
+      AIRFLOW__VARIABLES__GEMINI_API_KEY: ${GEMINI_API_KEY}
+      AIRFLOW__VARIABLES__EMBEDDING_MODEL: ${EMBEDDING_MODEL}
+      AIRFLOW__VARIABLES__COMPLETION_MODEL: ${COMPLETION_MODEL}
+      AIRFLOW__VARIABLES__OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AIRFLOW__VARIABLES__TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      AIRFLOW__VARIABLES__VERCEL_ACCESS_TOKEN: ${VERCEL_ACCESS_TOKEN}
+      AIRFLOW__VARIABLES__NOTIFICATION_PHONE: ${NOTIFICATION_PHONE}
+      AIRFLOW__VARIABLES__TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      AIRFLOW__VARIABLES__TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      AIRFLOW__VARIABLES__TWILIO_SANDBOX_PHONE_NUM: ${TWILIO_SANDBOX_PHONE_NUM}
+      AIRFLOW__VARIABLES__TWILIO_PHONE_NUM: ${TWILIO_PHONE_NUM}
+      AIRFLOW__VARIABLES__VERCEL_GITHUB_REPO: ${VERCEL_GITHUB_REPO}
+      AIRFLOW__VARIABLES__GITHUB_REPO: ${GITHUB_REPO}
+      AIRFLOW__CORE__FERNET_KEY: "hqfbPPaBNil6v3SzrGM7qqgx-1A9QkLrQnDEktKL8aE="
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
       AIRFLOW_HOME: /opt/airflow
     volumes:
-      - ./dags:/opt/airflow/dags
+    #   - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
-      - ./plugins:/opt/airflow/plugins
-    command: airflow scheduler
+    #   - ./plugins:/opt/airflow/plugins
+    command: >
+        bash -c "
+            airflow db migrate && airflow scheduler
+        "
+    deploy:
+        resources:
+            limits:
+              cpus: '0.5'
+              memory: 512M
+    networks:
+      - airflow
+  worker:
+    image: ghcr.io/samsha1/siteship-workflows:${SOFTWARE_VERSION_TAG}
+    container_name: siteship-worker
+    restart: always
+    env_file: .env
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__VARIABLES__SUPABASE_URL: ${SUPABASE_URL}
+      AIRFLOW__VARIABLES__SUPABASE_KEY: ${SUPABASE_KEY}
+      AIRFLOW__VARIABLES__GHCR_USERNAME: ${GHCR_USERNAME}
+      AIRFLOW__VARIABLES__GHCR_PAT: ${GHCR_PAT}
+      AIRFLOW__VARIABLES__GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
+      AIRFLOW__VARIABLES__SUPABASE_DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
+      AIRFLOW__VARIABLES__GEMINI_API_KEY: ${GEMINI_API_KEY}
+      AIRFLOW__VARIABLES__EMBEDDING_MODEL: ${EMBEDDING_MODEL}
+      AIRFLOW__VARIABLES__COMPLETION_MODEL: ${COMPLETION_MODEL}
+      AIRFLOW__VARIABLES__OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AIRFLOW__VARIABLES__TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      AIRFLOW__VARIABLES__VERCEL_ACCESS_TOKEN: ${VERCEL_ACCESS_TOKEN}
+      AIRFLOW__VARIABLES__NOTIFICATION_PHONE: ${NOTIFICATION_PHONE}
+      AIRFLOW__VARIABLES__TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      AIRFLOW__VARIABLES__TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      AIRFLOW__VARIABLES__TWILIO_SANDBOX_PHONE_NUM: ${TWILIO_SANDBOX_PHONE_NUM}
+      AIRFLOW__VARIABLES__TWILIO_PHONE_NUM: ${TWILIO_PHONE_NUM}
+      AIRFLOW__VARIABLES__VERCEL_GITHUB_REPO: ${VERCEL_GITHUB_REPO}
+      AIRFLOW__VARIABLES__GITHUB_REPO: ${GITHUB_REPO}
+      AIRFLOW__CORE__FERNET_KEY: "hqfbPPaBNil6v3SzrGM7qqgx-1A9QkLrQnDEktKL8aE="
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
+      AIRFLOW_HOME: /opt/airflow
+
+    volumes:
+      - ./logs:/opt/airflow/logs
+
+    command: >
+      bash -c "airflow celery worker"
+    deploy:
+        resources:
+            limits:
+              cpus: '0.5'
+              memory: 512M
+    networks:
+      - airflow
 
   redis:
     image: redis:7-alpine
@@ -78,6 +187,8 @@ services:
     restart: always
     expose:
       - "6379"
+    networks:
+      - airflow
 
   postgres:
     image: postgres:14
@@ -89,7 +200,12 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - airflow
 
 volumes:
   postgres_data:
   airflow_logs:
+networks:
+  airflow:
+    driver: bridge
