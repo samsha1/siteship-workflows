@@ -1,0 +1,95 @@
+version: "3.8"
+
+services:
+  siteship-workflows:
+    image: ghcr.io/samsha1/siteship-workflows:${SOFTWARE_VERSION_TAG}
+    container_name: siteship-workflows
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      # Airflow Core Config
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
+
+      # Webserver Auth
+      _AIRFLOW_WWW_USER_CREATE: "true"
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: ${ADMIN_PASSWORD}
+      _AIRFLOW_WWW_USER_EMAIL: ${ADMIN_EMAIL}
+      _AIRFLOW_WWW_USER_FIRSTNAME: Air
+      _AIRFLOW_WWW_USER_LASTNAME: Flow
+
+      # Other useful vars
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth"
+
+      # Optional for Elestio deployment
+      TZ: UTC
+      AIRFLOW_HOME: /opt/airflow
+
+    ports:
+      - 172.17.0.1:8080:8080
+
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+
+    command: >
+      bash -c "
+        airflow db migrate &&
+        if [ \"${_AIRFLOW_WWW_USER_CREATE}\" = 'true' ]; then
+          airflow users create \
+            --username ${_AIRFLOW_WWW_USER_USERNAME} \
+            --firstname ${_AIRFLOW_WWW_USER_FIRSTNAME} \
+            --lastname ${_AIRFLOW_WWW_USER_LASTNAME} \
+            --role Admin \
+            --email ${_AIRFLOW_WWW_USER_EMAIL} \
+            --password ${_AIRFLOW_WWW_USER_PASSWORD} || true;
+        fi &&
+        airflow api-server
+      "
+
+  scheduler:
+    image: ghcr.io/samsha1/siteship-workflows:v0.0.11
+    container_name: siteship-scheduler
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
+      AIRFLOW_HOME: /opt/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    command: airflow scheduler
+
+  redis:
+    image: redis:7-alpine
+    container_name: siteship-redis
+    restart: always
+    expose:
+      - "6379"
+
+  postgres:
+    image: postgres:14
+    container_name: siteship-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: ${ADMIN_PASSWORD}
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  airflow_logs:

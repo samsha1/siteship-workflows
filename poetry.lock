@@ -164,6 +164,22 @@ frozenlist = ">=1.1.0"
 typing-extensions = {version = ">=4.2", markers = "python_version < \"3.13\""}
 
 [[package]]
+name = "aiosmtplib"
+version = "5.0.0"
+description = "asyncio SMTP client"
+optional = false
+python-versions = ">=3.10"
+groups = ["main"]
+files = [
+    {file = "aiosmtplib-5.0.0-py3-none-any.whl", hash = "sha256:95eb0f81189780845363ab0627e7f130bca2d0060d46cd3eeb459f066eb7df32"},
+    {file = "aiosmtplib-5.0.0.tar.gz", hash = "sha256:514ac11c31cb767c764077eb3c2eb2ae48df6f63f1e847aeb36119c4fc42b52d"},
+]
+
+[package.extras]
+docs = ["furo (>=2023.9.10)", "sphinx (>=7.0.0)", "sphinx-autodoc-typehints (>=1.24.0)", "sphinx-copybutton (>=0.5.0)"]
+uvloop = ["uvloop (>=0.18)"]
+
+[[package]]
 name = "aiosqlite"
 version = "0.21.0"
 description = "asyncio bridge to the standard sqlite3 module"
@@ -203,6 +219,21 @@ typing-extensions = ">=4.12"
 tz = ["tzdata"]
 
 [[package]]
+name = "amqp"
+version = "5.3.1"
+description = "Low-level AMQP client for Python (fork of amqplib)."
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "amqp-5.3.1-py3-none-any.whl", hash = "sha256:43b3319e1b4e7d1251833a93d672b4af1e40f3d632d479b98661a95f117880a2"},
+    {file = "amqp-5.3.1.tar.gz", hash = "sha256:cddc00c725449522023bad949f70fff7b48f0b1ade74d170a6f10ab044739432"},
+]
+
+[package.dependencies]
+vine = ">=5.0.0,<6.0.0"
+
+[[package]]
 name = "annotated-types"
 version = "0.7.0"
 description = "Reusable constraint types to use with typing.Annotated"
@@ -238,30 +269,31 @@ trio = ["trio (>=0.26.1)"]
 
 [[package]]
 name = "apache-airflow"
-version = "3.0.3"
+version = "3.1.1"
 description = "Programmatically author, schedule and monitor data pipelines"
 optional = false
-python-versions = "<3.13,~=3.9"
+python-versions = "<3.14,>=3.10"
 groups = ["main"]
 files = [
-    {file = "apache_airflow-3.0.3-py3-none-any.whl", hash = "sha256:47ff4f8f3d0d539ac319c40db96e3fd7337846ddaba0b44a76ceb63a0bd7cb62"},
-    {file = "apache_airflow-3.0.3.tar.gz", hash = "sha256:8bb77223970ae9c0134ee5a3cb85ddcf6630fa9be82496fc8de3db1d55f883e6"},
+    {file = "apache_airflow-3.1.1-py3-none-any.whl", hash = "sha256:22a343183dec4cb9511fa7f4c96e66ca61da8ea7ceb5707561b31d4cb288822b"},
+    {file = "apache_airflow-3.1.1.tar.gz", hash = "sha256:96a9b8aac5fe26ddf35eef5ae4db8f31207f80852719cfd3fbc2432c7796423a"},
 ]
 
 [package.dependencies]
-apache-airflow-core = "3.0.3"
+apache-airflow-core = "3.1.1"
 apache-airflow-providers-sqlite = {version = ">=3.9.1", optional = true, markers = "extra == \"sqlite\""}
-apache-airflow-task-sdk = ">=1.0.0,<1.1.0"
+apache-airflow-task-sdk = ">=1.1.1"
 
 [package.extras]
 aiobotocore = ["apache-airflow-providers-amazon[aiobotocore] (>=9.6.0)"]
 airbyte = ["apache-airflow-providers-airbyte (>=5.0.0)"]
 alibaba = ["apache-airflow-providers-alibaba (>=3.0.0)"]
-all = ["amqp (>=5.2.0)", "apache-airflow-core[all]", "apache-airflow-core[async]", "apache-airflow-core[graphviz]", "apache-airflow-core[kerberos]", "apache-airflow-core[otel]", "apache-airflow-core[sentry]", "apache-airflow-core[statsd]", "apache-airflow-providers-airbyte (>=5.0.0)", "apache-airflow-providers-alibaba (>=3.0.0)", "apache-airflow-providers-amazon (>=9.0.0)", "apache-airflow-providers-amazon[aiobotocore] (>=9.6.0)", "apache-airflow-providers-amazon[s3fs]", "apache-airflow-providers-apache-beam (>=5.8.1)", "apache-airflow-providers-apache-cassandra (>=3.7.0)", "apache-airflow-providers-apache-drill (>=2.8.1)", "apache-airflow-providers-apache-druid (>=3.12.0)", "apache-airflow-providers-apache-flink (>=1.6.0)", "apache-airflow-providers-apache-hdfs", "apache-airflow-providers-apache-hdfs (>=4.6.0)", "apache-airflow-providers-apache-hive (>=8.2.1)", "apache-airflow-providers-apache-iceberg (>=1.2.0)", "apache-airflow-providers-apache-impala (>=1.5.2)", "apache-airflow-providers-apache-kafka (>=1.6.1)", "apache-airflow-providers-apache-kylin (>=3.8.0)", "apache-airflow-providers-apache-livy (>=3.9.2)", "apache-airflow-providers-apache-pig (>=4.6.0)", "apache-airflow-providers-apache-pinot (>=4.5.1)", "apache-airflow-providers-apache-spark (>=4.11.1)", "apache-airflow-providers-apprise (>=1.4.1)", "apache-airflow-providers-arangodb (>=2.7.0)", "apache-airflow-providers-asana (>=2.7.0)", "apache-airflow-providers-atlassian-jira (>=2.7.1)", "apache-airflow-providers-celery (>=3.8.3)", "apache-airflow-providers-cloudant (>=4.0.1)", "apache-airflow-providers-cncf-kubernetes (>=9.0.0)", "apache-airflow-providers-cohere (>=1.4.0)", "apache-airflow-providers-common-compat (>=1.2.1)", "apache-airflow-providers-common-io (>=1.4.2)", "apache-airflow-providers-common-messaging (>=1.0.1)", "apache-airflow-providers-common-sql (>=1.18.0)", "apache-airflow-providers-common-sql[pandas]", "apache-airflow-providers-common-sql[polars]", "apache-airflow-providers-databricks (>=6.11.0)", "apache-airflow-providers-datadog (>=3.8.0)", "apache-airflow-providers-dbt-cloud (>=3.11.0)", "apache-airflow-providers-dingding (>=3.7.0)", "apache-airflow-providers-discord (>=3.9.0)", "apache-airflow-providers-docker (>=3.14.1)", "apache-airflow-providers-edge3 (>=1.0.0)", "apache-airflow-providers-elasticsearch (>=5.5.2)", "apache-airflow-providers-exasol (>=4.6.1)", "apache-airflow-providers-fab", "apache-airflow-providers-fab (>=2.2.0)", "apache-airflow-providers-facebook (>=3.7.0)", "apache-airflow-providers-ftp (>=3.12.0)", "apache-airflow-providers-git (>=0.0.2)", "apache-airflow-providers-github (>=2.8.0)", "apache-airflow-providers-google (>=10.24.0)", "apache-airflow-providers-grpc (>=3.7.0)", "apache-airflow-providers-hashicorp (>=4.0.0)", "apache-airflow-providers-http (>=4.13.2)", "apache-airflow-providers-imap (>=3.8.0)", "apache-airflow-providers-influxdb (>=2.8.0)", "apache-airflow-providers-jdbc (>=4.5.2)", "apache-airflow-providers-jenkins (>=3.7.2)", "apache-airflow-providers-microsoft-azure (>=10.5.1)", "apache-airflow-providers-microsoft-mssql (>=3.9.2)", "apache-airflow-providers-microsoft-psrp (>=3.0.0)", "apache-airflow-providers-microsoft-winrm (>=3.6.1)", "apache-airflow-providers-mongo (>=4.2.2)", "apache-airflow-providers-mysql (>=5.7.2)", "apache-airflow-providers-neo4j (>=3.8.0)", "apache-airflow-providers-odbc (>=4.8.0)", "apache-airflow-providers-openai (>=1.5.0)", "apache-airflow-providers-openfaas (>=3.7.0)", "apache-airflow-providers-openlineage (>=2.3.0)", "apache-airflow-providers-opensearch (>=1.5.0)", "apache-airflow-providers-opsgenie (>=5.8.0)", "apache-airflow-providers-oracle (>=3.12.0)", "apache-airflow-providers-pagerduty (>=3.8.1)", "apache-airflow-providers-papermill (>=3.8.2)", "apache-airflow-providers-pgvector (>=1.4.0)", "apache-airflow-providers-pinecone (>=2.1.1)", "apache-airflow-providers-postgres (>=5.13.1)", "apache-airflow-providers-presto (>=5.7.0)", "apache-airflow-providers-qdrant (>=1.3.0)", "apache-airflow-providers-redis (>=4.0.0)", "apache-airflow-providers-salesforce (>=5.9.0)", "apache-airflow-providers-samba (>=4.9.0)", "apache-airflow-providers-segment (>=3.7.0)", "apache-airflow-providers-sendgrid (>=4.0.0)", "apache-airflow-providers-sftp (>=5.0.0)", "apache-airflow-providers-singularity (>=3.7.0)", "apache-airflow-providers-slack (>=8.9.1)", "apache-airflow-providers-smtp (>=1.8.1)", "apache-airflow-providers-snowflake (>=5.8.0)", "apache-airflow-providers-sqlite (>=3.9.1)", "apache-airflow-providers-ssh (>=3.14.0)", "apache-airflow-providers-standard (>=0.0.1)", "apache-airflow-providers-tableau (>=5.0.0)", "apache-airflow-providers-telegram (>=4.7.0)", "apache-airflow-providers-teradata (>=2.6.1)", "apache-airflow-providers-trino (>=5.8.1)", "apache-airflow-providers-vertica (>=3.9.1)", "apache-airflow-providers-weaviate (>=3.0.0)", "apache-airflow-providers-yandex (>=4.0.0)", "apache-airflow-providers-ydb (>=1.4.0)", "apache-airflow-providers-zendesk (>=4.9.0)", "atlasclient (>=0.1.2)", "authlib (>=1.0.0)", "cloudpickle (>=2.2.1)", "python-ldap (>=3.4.4)", "uv (>=0.7.19)"]
+all = ["amqp (>=5.2.0)", "apache-airflow-core[all]", "apache-airflow-core[async]", "apache-airflow-core[graphviz]", "apache-airflow-core[kerberos]", "apache-airflow-core[otel]", "apache-airflow-core[sentry]", "apache-airflow-core[statsd]", "apache-airflow-providers-airbyte (>=5.0.0)", "apache-airflow-providers-alibaba (>=3.0.0)", "apache-airflow-providers-amazon (>=9.0.0)", "apache-airflow-providers-amazon[aiobotocore] (>=9.6.0)", "apache-airflow-providers-amazon[python3-saml]", "apache-airflow-providers-amazon[s3fs]", "apache-airflow-providers-apache-beam (>=5.8.1) ; python_version != \"3.13\"", "apache-airflow-providers-apache-cassandra (>=3.7.0)", "apache-airflow-providers-apache-drill (>=2.8.1)", "apache-airflow-providers-apache-druid (>=3.12.0)", "apache-airflow-providers-apache-flink (>=1.6.0)", "apache-airflow-providers-apache-hdfs", "apache-airflow-providers-apache-hdfs (>=4.6.0)", "apache-airflow-providers-apache-hive (>=8.2.1)", "apache-airflow-providers-apache-iceberg (>=1.2.0)", "apache-airflow-providers-apache-impala (>=1.5.2)", "apache-airflow-providers-apache-kafka (>=1.6.1) ; python_version != \"3.13\"", "apache-airflow-providers-apache-kylin (>=3.8.0)", "apache-airflow-providers-apache-livy (>=3.9.2)", "apache-airflow-providers-apache-pig (>=4.6.0)", "apache-airflow-providers-apache-pinot (>=4.5.1)", "apache-airflow-providers-apache-spark (>=4.11.1)", "apache-airflow-providers-apache-tinkerpop (>=1.0.0)", "apache-airflow-providers-apprise (>=1.4.1)", "apache-airflow-providers-arangodb (>=2.7.0)", "apache-airflow-providers-asana (>=2.7.0)", "apache-airflow-providers-atlassian-jira (>=2.7.1)", "apache-airflow-providers-celery (>=3.8.3)", "apache-airflow-providers-cloudant (>=4.0.1)", "apache-airflow-providers-cncf-kubernetes (>=9.0.0)", "apache-airflow-providers-cohere (>=1.4.0)", "apache-airflow-providers-common-compat (>=1.2.1)", "apache-airflow-providers-common-io (>=1.4.2)", "apache-airflow-providers-common-messaging (>=2.0.0)", "apache-airflow-providers-common-sql (>=1.18.0)", "apache-airflow-providers-common-sql[pandas]", "apache-airflow-providers-common-sql[polars]", "apache-airflow-providers-databricks (>=6.11.0)", "apache-airflow-providers-datadog (>=3.8.0)", "apache-airflow-providers-dbt-cloud (>=3.11.0)", "apache-airflow-providers-dingding (>=3.7.0)", "apache-airflow-providers-discord (>=3.9.0)", "apache-airflow-providers-docker (>=3.14.1)", "apache-airflow-providers-edge3 (>=1.0.0)", "apache-airflow-providers-elasticsearch (>=5.5.2)", "apache-airflow-providers-exasol (>=4.6.1)", "apache-airflow-providers-fab (>=2.2.0) ; python_version != \"3.13\"", "apache-airflow-providers-facebook (>=3.7.0)", "apache-airflow-providers-ftp (>=3.12.0)", "apache-airflow-providers-git (>=0.0.2)", "apache-airflow-providers-github (>=2.8.0)", "apache-airflow-providers-google (>=10.24.0)", "apache-airflow-providers-grpc (>=3.7.0)", "apache-airflow-providers-hashicorp (>=4.0.0)", "apache-airflow-providers-http (>=4.13.2)", "apache-airflow-providers-imap (>=3.8.0)", "apache-airflow-providers-influxdb (>=2.8.0)", "apache-airflow-providers-jdbc (>=4.5.2)", "apache-airflow-providers-jenkins (>=3.7.2)", "apache-airflow-providers-keycloak (>=0.0.1)", "apache-airflow-providers-microsoft-azure (>=10.5.1)", "apache-airflow-providers-microsoft-mssql (>=3.9.2)", "apache-airflow-providers-microsoft-psrp (>=3.0.0)", "apache-airflow-providers-microsoft-winrm (>=3.6.1)", "apache-airflow-providers-mongo (>=4.2.2)", "apache-airflow-providers-mysql (>=5.7.2)", "apache-airflow-providers-neo4j (>=3.8.0)", "apache-airflow-providers-odbc (>=4.8.0)", "apache-airflow-providers-openai (>=1.5.0)", "apache-airflow-providers-openfaas (>=3.7.0)", "apache-airflow-providers-openlineage (>=2.3.0)", "apache-airflow-providers-opensearch (>=1.5.0)", "apache-airflow-providers-opsgenie (>=5.8.0)", "apache-airflow-providers-oracle (>=3.12.0)", "apache-airflow-providers-pagerduty (>=3.8.1)", "apache-airflow-providers-papermill (>=3.8.2)", "apache-airflow-providers-pgvector (>=1.4.0)", "apache-airflow-providers-pinecone (>=2.1.1)", "apache-airflow-providers-postgres (>=5.13.1)", "apache-airflow-providers-presto (>=5.7.0)", "apache-airflow-providers-qdrant (>=1.3.0)", "apache-airflow-providers-redis (>=4.0.0)", "apache-airflow-providers-salesforce (>=5.9.0)", "apache-airflow-providers-samba (>=4.9.0)", "apache-airflow-providers-segment (>=3.7.0)", "apache-airflow-providers-sendgrid (>=4.0.0)", "apache-airflow-providers-sftp (>=5.0.0)", "apache-airflow-providers-singularity (>=3.7.0)", "apache-airflow-providers-slack (>=8.9.1)", "apache-airflow-providers-smtp (>=1.8.1)", "apache-airflow-providers-snowflake (>=5.8.0)", "apache-airflow-providers-sqlite (>=3.9.1)", "apache-airflow-providers-ssh (>=3.14.0)", "apache-airflow-providers-standard (>=0.0.1)", "apache-airflow-providers-tableau (>=5.0.0)", "apache-airflow-providers-telegram (>=4.7.0)", "apache-airflow-providers-teradata (>=2.6.1)", "apache-airflow-providers-trino (>=5.8.1)", "apache-airflow-providers-vertica (>=3.9.1)", "apache-airflow-providers-weaviate (>=3.0.0)", "apache-airflow-providers-yandex (>=4.0.0) ; python_version != \"3.13\"", "apache-airflow-providers-ydb (>=1.4.0) ; python_version != \"3.13\"", "apache-airflow-providers-zendesk (>=4.9.0)", "atlasclient (>=0.1.2)", "authlib (>=1.0.0)", "cloudpickle (>=2.2.1)", "python-ldap (>=3.4.4)", "uv (>=0.9.4)"]
 all-core = ["apache-airflow-core[all]"]
 amazon = ["apache-airflow-providers-amazon (>=9.0.0)"]
+amazon-aws-auth = ["apache-airflow-providers-amazon[python3-saml]"]
 apache-atlas = ["atlasclient (>=0.1.2)"]
-apache-beam = ["apache-airflow-providers-apache-beam (>=5.8.1)"]
+apache-beam = ["apache-airflow-providers-apache-beam (>=5.8.1) ; python_version != \"3.13\""]
 apache-cassandra = ["apache-airflow-providers-apache-cassandra (>=3.7.0)"]
 apache-drill = ["apache-airflow-providers-apache-drill (>=2.8.1)"]
 apache-druid = ["apache-airflow-providers-apache-druid (>=3.12.0)"]
@@ -270,12 +302,13 @@ apache-hdfs = ["apache-airflow-providers-apache-hdfs (>=4.6.0)"]
 apache-hive = ["apache-airflow-providers-apache-hive (>=8.2.1)"]
 apache-iceberg = ["apache-airflow-providers-apache-iceberg (>=1.2.0)"]
 apache-impala = ["apache-airflow-providers-apache-impala (>=1.5.2)"]
-apache-kafka = ["apache-airflow-providers-apache-kafka (>=1.6.1)"]
+apache-kafka = ["apache-airflow-providers-apache-kafka (>=1.6.1) ; python_version != \"3.13\""]
 apache-kylin = ["apache-airflow-providers-apache-kylin (>=3.8.0)"]
 apache-livy = ["apache-airflow-providers-apache-livy (>=3.9.2)"]
 apache-pig = ["apache-airflow-providers-apache-pig (>=4.6.0)"]
 apache-pinot = ["apache-airflow-providers-apache-pinot (>=4.5.1)"]
 apache-spark = ["apache-airflow-providers-apache-spark (>=4.11.1)"]
+apache-tinkerpop = ["apache-airflow-providers-apache-tinkerpop (>=1.0.0)"]
 apache-webhdfs = ["apache-airflow-providers-apache-hdfs"]
 apprise = ["apache-airflow-providers-apprise (>=1.4.1)"]
 arangodb = ["apache-airflow-providers-arangodb (>=2.7.0)"]
@@ -289,7 +322,7 @@ cncf-kubernetes = ["apache-airflow-providers-cncf-kubernetes (>=9.0.0)"]
 cohere = ["apache-airflow-providers-cohere (>=1.4.0)"]
 common-compat = ["apache-airflow-providers-common-compat (>=1.2.1)"]
 common-io = ["apache-airflow-providers-common-io (>=1.4.2)"]
-common-messaging = ["apache-airflow-providers-common-messaging (>=1.0.1)"]
+common-messaging = ["apache-airflow-providers-common-messaging (>=2.0.0)"]
 common-sql = ["apache-airflow-providers-common-sql (>=1.18.0)"]
 databricks = ["apache-airflow-providers-databricks (>=6.11.0)"]
 datadog = ["apache-airflow-providers-datadog (>=3.8.0)"]
@@ -300,14 +333,14 @@ docker = ["apache-airflow-providers-docker (>=3.14.1)"]
 edge3 = ["apache-airflow-providers-edge3 (>=1.0.0)"]
 elasticsearch = ["apache-airflow-providers-elasticsearch (>=5.5.2)"]
 exasol = ["apache-airflow-providers-exasol (>=4.6.1)"]
-fab = ["apache-airflow-providers-fab (>=2.2.0)"]
+fab = ["apache-airflow-providers-fab (>=2.2.0) ; python_version != \"3.13\""]
 facebook = ["apache-airflow-providers-facebook (>=3.7.0)"]
 ftp = ["apache-airflow-providers-ftp (>=3.12.0)"]
 git = ["apache-airflow-providers-git (>=0.0.2)"]
 github = ["apache-airflow-providers-github (>=2.8.0)"]
-github-enterprise = ["apache-airflow-providers-fab", "authlib (>=1.0.0)"]
+github-enterprise = ["apache-airflow-providers-fab (>=2.2.0) ; python_version != \"3.13\"", "authlib (>=1.0.0)"]
 google = ["apache-airflow-providers-google (>=10.24.0)"]
-google-auth = ["apache-airflow-providers-fab", "authlib (>=1.0.0)"]
+google-auth = ["apache-airflow-providers-fab (>=2.2.0) ; python_version != \"3.13\"", "authlib (>=1.0.0)"]
 graphviz = ["apache-airflow-core[graphviz]"]
 grpc = ["apache-airflow-providers-grpc (>=3.7.0)"]
 hashicorp = ["apache-airflow-providers-hashicorp (>=4.0.0)"]
@@ -317,6 +350,7 @@ influxdb = ["apache-airflow-providers-influxdb (>=2.8.0)"]
 jdbc = ["apache-airflow-providers-jdbc (>=4.5.2)"]
 jenkins = ["apache-airflow-providers-jenkins (>=3.7.2)"]
 kerberos = ["apache-airflow-core[kerberos]"]
+keycloak = ["apache-airflow-providers-keycloak (>=0.0.1)"]
 ldap = ["python-ldap (>=3.4.4)"]
 microsoft-azure = ["apache-airflow-providers-microsoft-azure (>=10.5.1)"]
 microsoft-mssql = ["apache-airflow-providers-microsoft-mssql (>=3.9.2)"]
@@ -363,35 +397,35 @@ tableau = ["apache-airflow-providers-tableau (>=5.0.0)"]
 telegram = ["apache-airflow-providers-telegram (>=4.7.0)"]
 teradata = ["apache-airflow-providers-teradata (>=2.6.1)"]
 trino = ["apache-airflow-providers-trino (>=5.8.1)"]
-uv = ["uv (>=0.7.19)"]
+uv = ["uv (>=0.9.4)"]
 vertica = ["apache-airflow-providers-vertica (>=3.9.1)"]
 weaviate = ["apache-airflow-providers-weaviate (>=3.0.0)"]
-yandex = ["apache-airflow-providers-yandex (>=4.0.0)"]
-ydb = ["apache-airflow-providers-ydb (>=1.4.0)"]
+yandex = ["apache-airflow-providers-yandex (>=4.0.0) ; python_version != \"3.13\""]
+ydb = ["apache-airflow-providers-ydb (>=1.4.0) ; python_version != \"3.13\""]
 zendesk = ["apache-airflow-providers-zendesk (>=4.9.0)"]
 
 [[package]]
 name = "apache-airflow-core"
-version = "3.0.3"
+version = "3.1.1"
 description = "Core packages for Apache Airflow, schedule and API server"
 optional = false
-python-versions = "<3.13,~=3.9"
+python-versions = "<3.14,>=3.10"
 groups = ["main"]
 files = [
-    {file = "apache_airflow_core-3.0.3-py3-none-any.whl", hash = "sha256:6c1214b734a657d29660414cb4fccdd6eb92d64cc2cad4bd32e28faac87cb210"},
-    {file = "apache_airflow_core-3.0.3.tar.gz", hash = "sha256:bdf65a5b2d80f66e668cbbee86703e8cd8980fd01e4155166c320673ce730b97"},
+    {file = "apache_airflow_core-3.1.1-py3-none-any.whl", hash = "sha256:930b31c223eb4ad9aa81e0265fc498a6e30fc4a38bc69ae5e0eb7ece566d339c"},
+    {file = "apache_airflow_core-3.1.1.tar.gz", hash = "sha256:e2733c8046402820b8fc0d1b1a7828298226165bdcd6514c2eed0c2d37826892"},
 ]
 
 [package.dependencies]
 a2wsgi = ">=1.10.8"
 aiosqlite = ">=0.20.0"
 alembic = ">=1.13.1,<2.0"
-apache-airflow-providers-common-compat = ">=1.6.0"
-apache-airflow-providers-common-io = ">=1.5.3"
-apache-airflow-providers-common-sql = ">=1.26.0"
-apache-airflow-providers-smtp = ">=2.0.2"
-apache-airflow-providers-standard = ">=0.4.0"
-apache-airflow-task-sdk = ">=1.0.3,<1.1.0"
+apache-airflow-providers-common-compat = ">=1.7.4"
+apache-airflow-providers-common-io = ">=1.6.3"
+apache-airflow-providers-common-sql = ">=1.28.1"
+apache-airflow-providers-smtp = ">=2.3.1"
+apache-airflow-providers-standard = ">=1.9.0"
+apache-airflow-task-sdk = ">=1.1.1,<1.2.0"
 argcomplete = ">=1.10"
 asgiref = ">=2.3.0"
 attrs = ">=22.1.0,<25.2.0 || >25.2.0"
@@ -402,9 +436,7 @@ croniter = ">=2.0.2"
 cryptography = ">=41.0.0"
 deprecated = ">=1.2.13"
 dill = ">=0.2.2"
-fastapi = {version = ">=0.115.0,<0.115.10 || >0.115.10", extras = ["standard"]}
-flask = ">=2.1.1"
-gunicorn = ">=20.1.0"
+fastapi = {version = ">=0.116.0,<0.118.0", extras = ["standard-no-fastapi-cloud-cli"]}
 httpx = ">=0.25.0"
 importlib-metadata = [
     {version = ">=6.5", markers = "python_version < \"3.12\""},
@@ -414,60 +446,63 @@ itsdangerous = ">=2.0"
 jinja2 = ">=3.1.5"
 jsonschema = ">=4.19.1"
 lazy-object-proxy = ">=1.2.0"
-libcst = {version = ">=1.1.0", markers = "python_version >= \"3.10\""}
+libcst = ">=1.8.2"
 linkify-it-py = ">=2.0.0"
 lockfile = ">=0.12.2"
 methodtools = ">=0.4.7"
-opentelemetry-api = ">=1.26.0"
-opentelemetry-exporter-otlp = ">=1.26.0"
-packaging = ">=23.2"
+msgspec = ">=0.19.0"
+natsort = ">=8.4.0"
+opentelemetry-api = ">=1.27.0"
+opentelemetry-exporter-otlp = ">=1.27.0"
+opentelemetry-proto = ">=1.27.0,<9999"
+packaging = ">=25.0"
 pathspec = ">=0.9.0"
-pendulum = [
-    {version = ">=2.1.2,<4.0", markers = "python_version < \"3.12\""},
-    {version = ">=3.0.0,<4.0", markers = "python_version >= \"3.12\""},
-]
+pendulum = ">=3.1.0"
 pluggy = ">=1.5.0"
 psutil = ">=5.8.0"
 pydantic = ">=2.11.0"
 pygments = ">=2.0.1,<2.19.0 || >2.19.0"
+pygtrie = ">=2.5.0"
 pyjwt = ">=2.10.0"
 python-daemon = ">=3.0.0"
 python-dateutil = ">=2.7.0"
 python-slugify = ">=5.0"
-requests = ">=2.31.0,<3"
+requests = ">=2.32.0,<3"
 rich = ">=13.6.0"
 rich-argparse = ">=1.0.0"
 setproctitle = ">=1.3.3"
-sqlalchemy = {version = ">=1.4.49,<2.0", extras = ["asyncio"]}
+sqlalchemy = {version = ">=1.4.49", extras = ["asyncio"]}
 sqlalchemy-jsonfield = ">=1.0"
 sqlalchemy-utils = ">=0.41.2"
+starlette = ">=0.45.0"
+structlog = ">=25.4.0"
 svcs = ">=25.1.0"
 tabulate = ">=0.9.0"
-tenacity = ">=8.0.0,<8.2.0 || >8.2.0"
+tenacity = ">=8.3.0"
 termcolor = ">=3.0.0"
-typing-extensions = "!=4.14.0"
-universal-pathlib = ">=0.2.2,<0.2.4 || >0.2.4"
+typing-extensions = ">=4.14.1"
+universal-pathlib = ">=0.2.6,<0.3.0"
 uuid6 = ">=2024.7.10"
 
 [package.extras]
-all = ["blinker (>=1.1)", "graphviz (>=0.12) ; sys_platform != \"darwin\"", "opentelemetry-exporter-prometheus (>=0.47b0)", "pykerberos (>=1.1.13)", "requests-kerberos (>=0.14.0)", "sentry-sdk (>=1.32.0,!=1.33.0)", "statsd (>=3.3.0)", "thrift-sasl (>=0.4.2)"]
-async = ["eventlet (>=0.37.0)", "gevent (>=24.2.1)", "greenlet (>=0.4.9)"]
-graphviz = ["graphviz (>=0.12) ; sys_platform != \"darwin\""]
+all = ["blinker (>=1.1)", "graphviz (>=0.20) ; sys_platform != \"darwin\"", "opentelemetry-exporter-prometheus (>=0.47b0)", "pykerberos (>=1.1.13)", "requests-kerberos (>=0.14.0)", "sentry-sdk[flask] (>=2.30.0)", "statsd (>=3.3.0)", "thrift-sasl (>=0.4.2)"]
+async = ["eventlet (>=0.37.0)", "gevent (>=25.4.1)", "greenback (>=1.2.1)", "greenlet (>=3.1.0)"]
+graphviz = ["graphviz (>=0.20) ; sys_platform != \"darwin\""]
 kerberos = ["pykerberos (>=1.1.13)", "requests-kerberos (>=0.14.0)", "thrift-sasl (>=0.4.2)"]
 otel = ["opentelemetry-exporter-prometheus (>=0.47b0)"]
-sentry = ["blinker (>=1.1)", "sentry-sdk (>=1.32.0,!=1.33.0)"]
+sentry = ["blinker (>=1.1)", "sentry-sdk[flask] (>=2.30.0)"]
 statsd = ["statsd (>=3.3.0)"]
 
 [[package]]
 name = "apache-airflow-providers-common-compat"
-version = "1.7.2"
+version = "1.8.0"
 description = "Provider package apache-airflow-providers-common-compat for Apache Airflow"
 optional = false
-python-versions = "~=3.10"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "apache_airflow_providers_common_compat-1.7.2-py3-none-any.whl", hash = "sha256:b57398bb26f0afe0c80c8ffe4d0f36496ac367cdbda14ff0312a95f09a6f936c"},
-    {file = "apache_airflow_providers_common_compat-1.7.2.tar.gz", hash = "sha256:797450468766cbc00752060625b5e2690ffc5f40d8890f4f30951d56cf3d94be"},
+    {file = "apache_airflow_providers_common_compat-1.8.0-py3-none-any.whl", hash = "sha256:eaeea70747b346dcd6aaf895ef81e58c71778fec69109071822c629bcdb45fc8"},
+    {file = "apache_airflow_providers_common_compat-1.8.0.tar.gz", hash = "sha256:81218bfcd3f3c50f86df4bb265e0a38913829a7ce92c7de4a47c33b89c574d09"},
 ]
 
 [package.dependencies]
@@ -479,14 +514,14 @@ standard = ["apache-airflow-providers-standard"]
 
 [[package]]
 name = "apache-airflow-providers-common-io"
-version = "1.6.1"
+version = "1.6.4"
 description = "Provider package apache-airflow-providers-common-io for Apache Airflow"
 optional = false
-python-versions = "~=3.10"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "apache_airflow_providers_common_io-1.6.1-py3-none-any.whl", hash = "sha256:54590eb60216d2a0beb13a7dc2777fabdc815f947b5ab387f097f492f4a3f317"},
-    {file = "apache_airflow_providers_common_io-1.6.1.tar.gz", hash = "sha256:2bfc3cfa85070b1e0e827566c4684f66b3d542670d74c4e5c4a8e4aaabd27f9f"},
+    {file = "apache_airflow_providers_common_io-1.6.4-py3-none-any.whl", hash = "sha256:f6ff2f8b7b1b140b0db4fa5f92ba00097e5088f1189289179aa007c534b4b0b8"},
+    {file = "apache_airflow_providers_common_io-1.6.4.tar.gz", hash = "sha256:0013269e3b4030ba6451cf92fe37da993838bf58fd4862733069f978569941cd"},
 ]
 
 [package.dependencies]
@@ -498,14 +533,14 @@ openlineage = ["apache-airflow-providers-openlineage"]
 
 [[package]]
 name = "apache-airflow-providers-common-sql"
-version = "1.27.3"
+version = "1.28.2"
 description = "Provider package apache-airflow-providers-common-sql for Apache Airflow"
 optional = false
-python-versions = "~=3.10"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "apache_airflow_providers_common_sql-1.27.3-py3-none-any.whl", hash = "sha256:9e796b6a2f932a24c8ad23d8d357a8533365bed333cde5f8fd07d709ab2762ca"},
-    {file = "apache_airflow_providers_common_sql-1.27.3.tar.gz", hash = "sha256:5efd7706ea6392eac564cac1652b905d9262c4c39ccc6867ac45831fa0fb98f4"},
+    {file = "apache_airflow_providers_common_sql-1.28.2-py3-none-any.whl", hash = "sha256:6fbdac4bcdfa692d0e3164bfdec4e4bce147ad9f55487fe5ea2b473ffc9989fe"},
+    {file = "apache_airflow_providers_common_sql-1.28.2.tar.gz", hash = "sha256:0df29f47116558d59f998b8236fbe3dc3d97e79995ad14b311bb5a7a6541da18"},
 ]
 
 [package.dependencies]
@@ -516,7 +551,7 @@ sqlparse = ">=0.5.1"
 
 [package.extras]
 openlineage = ["apache-airflow-providers-openlineage"]
-pandas = ["pandas (>=2.1.2) ; python_version < \"3.13\"", "pandas (>=2.2.3) ; python_version >= \"3.13\""]
+pandas = ["pandas (>=2.2.3) ; python_version >= \"3.13\"", "pandas[sql-other] (>=2.1.2) ; python_version < \"3.13\""]
 polars = ["polars (>=1.26.0)"]
 
 [[package]]
@@ -566,17 +601,18 @@ PyGithub = ">=2.1.1"
 
 [[package]]
 name = "apache-airflow-providers-smtp"
-version = "2.1.1"
+version = "2.3.1"
 description = "Provider package apache-airflow-providers-smtp for Apache Airflow"
 optional = false
-python-versions = "~=3.10"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "apache_airflow_providers_smtp-2.1.1-py3-none-any.whl", hash = "sha256:66d1e69e3ab299611b41b1e16fd44b444d53fcd7727dccf44515be1b141b246a"},
-    {file = "apache_airflow_providers_smtp-2.1.1.tar.gz", hash = "sha256:1b2b7c7d17784a37e7c517a599356ea973942ee476de9651522ebd66ab7c5197"},
+    {file = "apache_airflow_providers_smtp-2.3.1-py3-none-any.whl", hash = "sha256:d1302e83f4444be73e70fe4deacb3ccbac3f0da17bef53baa04f095f56e7d3a3"},
+    {file = "apache_airflow_providers_smtp-2.3.1.tar.gz", hash = "sha256:45c9b0d4fd8f086568b0b8d263d48335c9ca2bd1cf72b566f1e68deee70007f9"},
 ]
 
 [package.dependencies]
+aiosmtplib = ">=0.1.6"
 apache-airflow = ">=2.10.0"
 apache-airflow-providers-common-compat = ">=1.6.1"
 
@@ -598,47 +634,54 @@ apache-airflow-providers-common-sql = ">=1.26.0"
 
 [[package]]
 name = "apache-airflow-providers-standard"
-version = "1.4.1"
+version = "1.9.1"
 description = "Provider package apache-airflow-providers-standard for Apache Airflow"
 optional = false
-python-versions = "~=3.10"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "apache_airflow_providers_standard-1.4.1-py3-none-any.whl", hash = "sha256:44a22b9c0d892ae3fd4e4c4dc108f79575f254c9b64645223b99528db4d0e6af"},
-    {file = "apache_airflow_providers_standard-1.4.1.tar.gz", hash = "sha256:344c16a0903c2060b2f0099dcfe0728476da10825a9b667b389c534f95285c4b"},
+    {file = "apache_airflow_providers_standard-1.9.1-py3-none-any.whl", hash = "sha256:11d0394061003494780230e921427c5d66302ed95750087157842bb3e1e4ccbf"},
+    {file = "apache_airflow_providers_standard-1.9.1.tar.gz", hash = "sha256:74aa7e09183ec94487378a83f3799e0f12e481b3752f45eaab5c9e36fb128aea"},
 ]
 
 [package.dependencies]
 apache-airflow = ">=2.10.0"
+apache-airflow-providers-common-compat = ">=1.8.0"
 
 [[package]]
 name = "apache-airflow-task-sdk"
-version = "1.0.3"
+version = "1.1.1"
 description = "Python Task SDK for Apache Airflow DAG Authors"
 optional = false
-python-versions = "<3.13,>=3.9"
+python-versions = "<3.14,>=3.10"
 groups = ["main"]
 files = [
-    {file = "apache_airflow_task_sdk-1.0.3-py3-none-any.whl", hash = "sha256:d7813c60883907e904766d25862649c4c91e6bb6c07744774da4899f6df30de9"},
-    {file = "apache_airflow_task_sdk-1.0.3.tar.gz", hash = "sha256:1772e27aa8a5306c70092beb58a96e2935cd3265ddda4e1f9e1930221091f4a4"},
+    {file = "apache_airflow_task_sdk-1.1.1-py3-none-any.whl", hash = "sha256:cd979b279d78fed9c6cc71532bd3ffdfbbe8470532027b75af3bb4203efc746e"},
+    {file = "apache_airflow_task_sdk-1.1.1.tar.gz", hash = "sha256:105d058e0d3fd264245bafa799acd73fada121202fa2b800d0638f3ffac5660c"},
 ]
 
 [package.dependencies]
-apache-airflow-core = ">=3.0.3,<3.1.0"
+apache-airflow-core = ">=3.1.1,<3.2.0"
+asgiref = ">=2.3.0"
 attrs = ">=24.2.0,<25.2.0 || >25.2.0"
+babel = ">=2.17.0"
+colorlog = ">=6.8.2"
 fsspec = ">=2023.10.0"
+greenback = ">=1.2.1"
 httpx = ">=0.27.0"
 jinja2 = ">=3.1.5"
 methodtools = ">=0.4.7"
 msgspec = ">=0.19.0"
-pendulum = [
-    {version = ">=2.1.2,<4.0", markers = "python_version < \"3.12\""},
-    {version = ">=3.0.0,<4.0", markers = "python_version >= \"3.12\""},
-]
+pendulum = ">=3.1.0"
 psutil = ">=6.1.0"
+pydantic = ">2.11.0"
+pygtrie = ">=2.5.0"
 python-dateutil = ">=2.7.0"
+requests = ">=2.31.0,<3"
 retryhttp = ">=1.2.0,<1.3.0 || >1.3.0"
 structlog = ">=25.4.0"
+tenacity = ">=8.3.0"
+types-requests = ">=2.31.0"
 
 [[package]]
 name = "apispec"
@@ -694,6 +737,19 @@ files = [
 tests = ["mypy (>=1.14.0)", "pytest", "pytest-asyncio"]
 
 [[package]]
+name = "async-timeout"
+version = "5.0.1"
+description = "Timeout context manager for asyncio programs"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+markers = "python_version == \"3.11\" and python_full_version < \"3.11.3\""
+files = [
+    {file = "async_timeout-5.0.1-py3-none-any.whl", hash = "sha256:39e3809566ff85354557ec2398b55e096c8364bacac9405a7a1fa429e77fe76c"},
+    {file = "async_timeout-5.0.1.tar.gz", hash = "sha256:d9321a7a3d5a6a5e187e824d2fa0793ce379a202935782d555d6e9d2735677d3"},
+]
+
+[[package]]
 name = "attrs"
 version = "25.3.0"
 description = "Classes Without Boilerplate"
@@ -727,6 +783,18 @@ files = [
 
 [package.extras]
 dev = ["backports.zoneinfo ; python_version < \"3.9\"", "freezegun (>=1.0,<2.0)", "jinja2 (>=3.0)", "pytest (>=6.0)", "pytest-cov", "pytz", "setuptools", "tzdata ; sys_platform == \"win32\""]
+
+[[package]]
+name = "billiard"
+version = "4.2.2"
+description = "Python multiprocessing fork with improvements and bugfixes"
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "billiard-4.2.2-py3-none-any.whl", hash = "sha256:4bc05dcf0d1cc6addef470723aac2a6232f3c7ed7475b0b580473a9145829457"},
+    {file = "billiard-4.2.2.tar.gz", hash = "sha256:e815017a062b714958463e07ba15981d802dc53d41c5b69d28c5a7c238f8ecf3"},
+]
 
 [[package]]
 name = "blinker"
@@ -774,6 +842,63 @@ typing-inspection = ">=0.4.0"
 
 [package.extras]
 standard = ["fastapi[standard] (>=0.112.3)", "typer (>=0.7.0)"]
+
+[[package]]
+name = "celery"
+version = "5.5.3"
+description = "Distributed Task Queue."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "celery-5.5.3-py3-none-any.whl", hash = "sha256:0b5761a07057acee94694464ca482416b959568904c9dfa41ce8413a7d65d525"},
+    {file = "celery-5.5.3.tar.gz", hash = "sha256:6c972ae7968c2b5281227f01c3a3f984037d21c5129d07bf3550cc2afc6b10a5"},
+]
+
+[package.dependencies]
+billiard = ">=4.2.1,<5.0"
+click = ">=8.1.2,<9.0"
+click-didyoumean = ">=0.3.0"
+click-plugins = ">=1.1.1"
+click-repl = ">=0.2.0"
+kombu = ">=5.5.2,<5.6"
+python-dateutil = ">=2.8.2"
+vine = ">=5.1.0,<6.0"
+
+[package.extras]
+arangodb = ["pyArango (>=2.0.2)"]
+auth = ["cryptography (==44.0.2)"]
+azureblockblob = ["azure-identity (>=1.19.0)", "azure-storage-blob (>=12.15.0)"]
+brotli = ["brotli (>=1.0.0) ; platform_python_implementation == \"CPython\"", "brotlipy (>=0.7.0) ; platform_python_implementation == \"PyPy\""]
+cassandra = ["cassandra-driver (>=3.25.0,<4)"]
+consul = ["python-consul2 (==0.1.5)"]
+cosmosdbsql = ["pydocumentdb (==2.3.5)"]
+couchbase = ["couchbase (>=3.0.0) ; platform_python_implementation != \"PyPy\" and (platform_system != \"Windows\" or python_version < \"3.10\")"]
+couchdb = ["pycouchdb (==1.16.0)"]
+django = ["Django (>=2.2.28)"]
+dynamodb = ["boto3 (>=1.26.143)"]
+elasticsearch = ["elastic-transport (<=8.17.1)", "elasticsearch (<=8.17.2)"]
+eventlet = ["eventlet (>=0.32.0) ; python_version < \"3.10\""]
+gcs = ["google-cloud-firestore (==2.20.1)", "google-cloud-storage (>=2.10.0)", "grpcio (==1.67.0)"]
+gevent = ["gevent (>=1.5.0)"]
+librabbitmq = ["librabbitmq (>=2.0.0) ; python_version < \"3.11\""]
+memcache = ["pylibmc (==1.6.3) ; platform_system != \"Windows\""]
+mongodb = ["kombu[mongodb]"]
+msgpack = ["kombu[msgpack]"]
+pydantic = ["pydantic (>=2.4)"]
+pymemcache = ["python-memcached (>=1.61)"]
+pyro = ["pyro4 (==4.82) ; python_version < \"3.11\""]
+pytest = ["pytest-celery[all] (>=1.2.0,<1.3.0)"]
+redis = ["kombu[redis]"]
+s3 = ["boto3 (>=1.26.143)"]
+slmq = ["softlayer_messaging (>=1.0.3)"]
+solar = ["ephem (==4.2) ; platform_python_implementation != \"PyPy\""]
+sqlalchemy = ["kombu[sqlalchemy]"]
+sqs = ["boto3 (>=1.26.143)", "kombu[sqs] (>=5.5.0)", "urllib3 (>=1.26.16)"]
+tblib = ["tblib (>=1.3.0) ; python_version < \"3.8.0\"", "tblib (>=1.5.0) ; python_version >= \"3.8.0\""]
+yaml = ["kombu[yaml]"]
+zookeeper = ["kazoo (>=1.3.1)"]
+zstd = ["zstandard (==0.23.0)"]
 
 [[package]]
 name = "certifi"
@@ -983,6 +1108,58 @@ files = [
 
 [package.dependencies]
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[[package]]
+name = "click-didyoumean"
+version = "0.3.1"
+description = "Enables git-like *did-you-mean* feature in click"
+optional = false
+python-versions = ">=3.6.2"
+groups = ["main"]
+files = [
+    {file = "click_didyoumean-0.3.1-py3-none-any.whl", hash = "sha256:5c4bb6007cfea5f2fd6583a2fb6701a22a41eb98957e63d0fac41c10e7c3117c"},
+    {file = "click_didyoumean-0.3.1.tar.gz", hash = "sha256:4f82fdff0dbe64ef8ab2279bd6aa3f6a99c3b28c05aa09cbfc07c9d7fbb5a463"},
+]
+
+[package.dependencies]
+click = ">=7"
+
+[[package]]
+name = "click-plugins"
+version = "1.1.1.2"
+description = "An extension module for click to enable registering CLI commands via setuptools entry-points."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "click_plugins-1.1.1.2-py2.py3-none-any.whl", hash = "sha256:008d65743833ffc1f5417bf0e78e8d2c23aab04d9745ba817bd3e71b0feb6aa6"},
+    {file = "click_plugins-1.1.1.2.tar.gz", hash = "sha256:d7af3984a99d243c131aa1a828331e7630f4a88a9741fd05c927b204bcf92261"},
+]
+
+[package.dependencies]
+click = ">=4.0"
+
+[package.extras]
+dev = ["coveralls", "pytest (>=3.6)", "pytest-cov", "wheel"]
+
+[[package]]
+name = "click-repl"
+version = "0.3.0"
+description = "REPL plugin for Click"
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "click-repl-0.3.0.tar.gz", hash = "sha256:17849c23dba3d667247dc4defe1757fff98694e90fe37474f3feebb69ced26a9"},
+    {file = "click_repl-0.3.0-py3-none-any.whl", hash = "sha256:fb7e06deb8da8de86180a33a9da97ac316751c094c6899382da7feeeeb51b812"},
+]
+
+[package.dependencies]
+click = ">=7.0"
+prompt-toolkit = ">=3.0.36"
+
+[package.extras]
+testing = ["pytest (>=7.2.1)", "pytest-cov (>=4.0.0)", "tox (>=4.4.3)"]
 
 [[package]]
 name = "clickclick"
@@ -1225,15 +1402,15 @@ files = [
 ]
 
 [package.dependencies]
-email-validator = {version = ">=2.0.0", optional = true, markers = "extra == \"standard\""}
-fastapi-cli = {version = ">=0.0.8", extras = ["standard"], optional = true, markers = "extra == \"standard\""}
-httpx = {version = ">=0.23.0", optional = true, markers = "extra == \"standard\""}
-jinja2 = {version = ">=3.1.5", optional = true, markers = "extra == \"standard\""}
+email-validator = {version = ">=2.0.0", optional = true, markers = "extra == \"standard-no-fastapi-cloud-cli\""}
+fastapi-cli = {version = ">=0.0.8", extras = ["standard-no-fastapi-cloud-cli"], optional = true, markers = "extra == \"standard-no-fastapi-cloud-cli\""}
+httpx = {version = ">=0.23.0", optional = true, markers = "extra == \"standard-no-fastapi-cloud-cli\""}
+jinja2 = {version = ">=3.1.5", optional = true, markers = "extra == \"standard-no-fastapi-cloud-cli\""}
 pydantic = ">=1.7.4,<1.8 || >1.8,<1.8.1 || >1.8.1,<2.0.0 || >2.0.0,<2.0.1 || >2.0.1,<2.1.0 || >2.1.0,<3.0.0"
-python-multipart = {version = ">=0.0.18", optional = true, markers = "extra == \"standard\""}
+python-multipart = {version = ">=0.0.18", optional = true, markers = "extra == \"standard-no-fastapi-cloud-cli\""}
 starlette = ">=0.40.0,<0.48.0"
 typing-extensions = ">=4.8.0"
-uvicorn = {version = ">=0.12.0", extras = ["standard"], optional = true, markers = "extra == \"standard\""}
+uvicorn = {version = ">=0.12.0", extras = ["standard"], optional = true, markers = "extra == \"standard-no-fastapi-cloud-cli\""}
 
 [package.extras]
 all = ["email-validator (>=2.0.0)", "fastapi-cli[standard] (>=0.0.8)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=3.1.5)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.18)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
@@ -1253,7 +1430,6 @@ files = [
 ]
 
 [package.dependencies]
-fastapi-cloud-cli = {version = ">=0.1.1", optional = true, markers = "extra == \"standard\""}
 rich-toolkit = ">=0.14.8"
 typer = ">=0.15.1"
 uvicorn = {version = ">=0.15.0", extras = ["standard"]}
@@ -1261,30 +1437,6 @@ uvicorn = {version = ">=0.15.0", extras = ["standard"]}
 [package.extras]
 standard = ["fastapi-cloud-cli (>=0.1.1)", "uvicorn[standard] (>=0.15.0)"]
 standard-no-fastapi-cloud-cli = ["uvicorn[standard] (>=0.15.0)"]
-
-[[package]]
-name = "fastapi-cloud-cli"
-version = "0.1.4"
-description = "Deploy and manage FastAPI Cloud apps from the command line 🚀"
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "fastapi_cloud_cli-0.1.4-py3-none-any.whl", hash = "sha256:1db1ba757aa46a16a5e5dacf7cddc137ca0a3c42f65dba2b1cc6a8f24c41be42"},
-    {file = "fastapi_cloud_cli-0.1.4.tar.gz", hash = "sha256:a0ab7633d71d864b4041896b3fe2f462de61546db7c52eb13e963f4d40af0eba"},
-]
-
-[package.dependencies]
-httpx = ">=0.27.0"
-pydantic = {version = ">=1.6.1", extras = ["email"]}
-rich-toolkit = ">=0.14.5"
-rignore = ">=0.5.1"
-sentry-sdk = ">=2.20.0"
-typer = ">=0.12.3"
-uvicorn = {version = ">=0.15.0", extras = ["standard"]}
-
-[package.extras]
-standard = ["uvicorn[standard] (>=0.15.0)"]
 
 [[package]]
 name = "flask"
@@ -1655,13 +1807,29 @@ protobuf = ">=3.20.2,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4
 grpc = ["grpcio (>=1.44.0,<2.0.0)"]
 
 [[package]]
+name = "greenback"
+version = "1.2.1"
+description = "Reenter an async event loop from synchronous code"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "greenback-1.2.1-py3-none-any.whl", hash = "sha256:98768edbbe4340091a9730cf64a683fcbaa3f2cb81e4ac41d7ed28d3b6f74b79"},
+    {file = "greenback-1.2.1.tar.gz", hash = "sha256:de3ca656885c03b96dab36079f3de74bb5ba061da9bfe3bb69dccc866ef95ea3"},
+]
+
+[package.dependencies]
+greenlet = "!=0.4.17"
+outcome = "*"
+sniffio = "*"
+
+[[package]]
 name = "greenlet"
 version = "3.2.3"
 description = "Lightweight in-process concurrent programming"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "platform_machine == \"aarch64\" or platform_machine == \"ppc64le\" or platform_machine == \"x86_64\" or platform_machine == \"amd64\" or platform_machine == \"AMD64\" or platform_machine == \"win32\" or platform_machine == \"WIN32\""
 files = [
     {file = "greenlet-3.2.3-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:1afd685acd5597349ee6d7a88a8bec83ce13c106ac78c196ee9dde7c04fe87be"},
     {file = "greenlet-3.2.3-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:761917cac215c61e9dc7324b2606107b3b292a8349bdebb31503ab4de3f559ac"},
@@ -1786,28 +1954,6 @@ files = [
 
 [package.extras]
 protobuf = ["grpcio-tools (>=1.73.1)"]
-
-[[package]]
-name = "gunicorn"
-version = "23.0.0"
-description = "WSGI HTTP Server for UNIX"
-optional = false
-python-versions = ">=3.7"
-groups = ["main"]
-files = [
-    {file = "gunicorn-23.0.0-py3-none-any.whl", hash = "sha256:ec400d38950de4dfd418cff8328b2c8faed0edb0d517d3394e457c317908ca4d"},
-    {file = "gunicorn-23.0.0.tar.gz", hash = "sha256:f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec"},
-]
-
-[package.dependencies]
-packaging = "*"
-
-[package.extras]
-eventlet = ["eventlet (>=0.24.1,!=0.36.0)"]
-gevent = ["gevent (>=1.4.0)"]
-setproctitle = ["setproctitle"]
-testing = ["coverage", "eventlet", "gevent", "pytest", "pytest-cov"]
-tornado = ["tornado (>=0.2)"]
 
 [[package]]
 name = "h11"
@@ -2053,6 +2199,42 @@ files = [
 
 [package.dependencies]
 referencing = ">=0.31.0"
+
+[[package]]
+name = "kombu"
+version = "5.5.4"
+description = "Messaging library for Python."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "kombu-5.5.4-py3-none-any.whl", hash = "sha256:a12ed0557c238897d8e518f1d1fdf84bd1516c5e305af2dacd85c2015115feb8"},
+    {file = "kombu-5.5.4.tar.gz", hash = "sha256:886600168275ebeada93b888e831352fe578168342f0d1d5833d88ba0d847363"},
+]
+
+[package.dependencies]
+amqp = ">=5.1.1,<6.0.0"
+packaging = "*"
+tzdata = {version = ">=2025.2", markers = "python_version >= \"3.9\""}
+vine = "5.1.0"
+
+[package.extras]
+azureservicebus = ["azure-servicebus (>=7.10.0)"]
+azurestoragequeues = ["azure-identity (>=1.12.0)", "azure-storage-queue (>=12.6.0)"]
+confluentkafka = ["confluent-kafka (>=2.2.0)"]
+consul = ["python-consul2 (==0.1.5)"]
+gcpubsub = ["google-cloud-monitoring (>=2.16.0)", "google-cloud-pubsub (>=2.18.4)", "grpcio (==1.67.0)", "protobuf (==4.25.5)"]
+librabbitmq = ["librabbitmq (>=2.0.0) ; python_version < \"3.11\""]
+mongodb = ["pymongo (==4.10.1)"]
+msgpack = ["msgpack (==1.1.0)"]
+pyro = ["pyro4 (==4.82)"]
+qpid = ["qpid-python (>=0.26)", "qpid-tools (>=0.26)"]
+redis = ["redis (>=4.5.2,!=4.5.5,!=5.0.2,<=5.2.1)"]
+slmq = ["softlayer_messaging (>=1.0.3)"]
+sqlalchemy = ["sqlalchemy (>=1.4.48,<2.1)"]
+sqs = ["boto3 (>=1.26.143)", "urllib3 (>=1.26.16)"]
+yaml = ["PyYAML (>=3.10)"]
+zookeeper = ["kazoo (>=2.8.0)"]
 
 [[package]]
 name = "lazy-object-proxy"
@@ -2585,6 +2767,22 @@ files = [
 ]
 
 [[package]]
+name = "natsort"
+version = "8.4.0"
+description = "Simple yet flexible natural sorting in Python."
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "natsort-8.4.0-py3-none-any.whl", hash = "sha256:4732914fb471f56b5cce04d7bae6f164a592c7712e1c85f9ef585e197299521c"},
+    {file = "natsort-8.4.0.tar.gz", hash = "sha256:45312c4a0e5507593da193dedd04abb1469253b601ecaf63445ad80f0a1ea581"},
+]
+
+[package.extras]
+fast = ["fastnumbers (>=2.0.0)"]
+icu = ["PyICU (>=1.0.0)"]
+
+[[package]]
 name = "opentelemetry-api"
 version = "1.35.0"
 description = "OpenTelemetry Python API"
@@ -2737,6 +2935,21 @@ files = [
 dev = ["black", "mypy", "pytest"]
 
 [[package]]
+name = "outcome"
+version = "1.3.0.post0"
+description = "Capture the outcome of Python function calls."
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "outcome-1.3.0.post0-py2.py3-none-any.whl", hash = "sha256:e771c5ce06d1415e356078d3bdd68523f284b4ce5419828922b6871e65eda82b"},
+    {file = "outcome-1.3.0.post0.tar.gz", hash = "sha256:9dcf02e65f2971b80047b377468e72a268e15c0af3cf1238e6ff14f7f91143b8"},
+]
+
+[package.dependencies]
+attrs = ">=19.2.0"
+
+[[package]]
 name = "packaging"
 version = "25.0"
 description = "Core utilities for Python packages"
@@ -2874,6 +3087,21 @@ six = "*"
 
 [package.extras]
 dev = ["nose", "pipreqs", "twine"]
+
+[[package]]
+name = "prompt-toolkit"
+version = "3.0.52"
+description = "Library for building powerful interactive command lines in Python"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "prompt_toolkit-3.0.52-py3-none-any.whl", hash = "sha256:9aac639a3bbd33284347de5ad8d68ecc044b91a762dc39b7c21095fcd6a19955"},
+    {file = "prompt_toolkit-3.0.52.tar.gz", hash = "sha256:28cde192929c8e7321de85de1ddbe736f1375148b02f2e17edd840042b1be855"},
+]
+
+[package.dependencies]
+wcwidth = "*"
 
 [[package]]
 name = "propcache"
@@ -3027,6 +3255,83 @@ dev = ["abi3audit", "black (==24.10.0)", "check-manifest", "coverage", "packagin
 test = ["pytest", "pytest-xdist", "setuptools"]
 
 [[package]]
+name = "psycopg2-binary"
+version = "2.9.11"
+description = "psycopg2 - Python-PostgreSQL Database Adapter"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "psycopg2-binary-2.9.11.tar.gz", hash = "sha256:b6aed9e096bf63f9e75edf2581aa9a7e7186d97ab5c177aa6c87797cd591236c"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d6fe6b47d0b42ce1c9f1fa3e35bb365011ca22e39db37074458f27921dca40f2"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:a6c0e4262e089516603a09474ee13eabf09cb65c332277e39af68f6233911087"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:c47676e5b485393f069b4d7a811267d3168ce46f988fa602658b8bb901e9e64d"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-manylinux2014_ppc64le.manylinux_2_17_ppc64le.whl", hash = "sha256:a28d8c01a7b27a1e3265b11250ba7557e5f72b5ee9e5f3a2fa8d2949c29bf5d2"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:5f3f2732cf504a1aa9e9609d02f79bea1067d99edf844ab92c247bbca143303b"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-manylinux_2_38_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:865f9945ed1b3950d968ec4690ce68c55019d79e4497366d36e090327ce7db14"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:91537a8df2bde69b1c1db01d6d944c831ca793952e4f57892600e96cee95f2cd"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-musllinux_1_2_ppc64le.whl", hash = "sha256:4dca1f356a67ecb68c81a7bc7809f1569ad9e152ce7fd02c2f2036862ca9f66b"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-musllinux_1_2_riscv64.whl", hash = "sha256:0da4de5c1ac69d94ed4364b6cbe7190c1a70d325f112ba783d83f8440285f152"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:37d8412565a7267f7d79e29ab66876e55cb5e8e7b3bbf94f8206f6795f8f7e7e"},
+    {file = "psycopg2_binary-2.9.11-cp310-cp310-win_amd64.whl", hash = "sha256:c665f01ec8ab273a61c62beeb8cce3014c214429ced8a308ca1fc410ecac3a39"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:0e8480afd62362d0a6a27dd09e4ca2def6fa50ed3a4e7c09165266106b2ffa10"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:763c93ef1df3da6d1a90f86ea7f3f806dc06b21c198fa87c3c25504abec9404a"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:2e164359396576a3cc701ba8af4751ae68a07235d7a380c631184a611220d9a4"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-manylinux2014_ppc64le.manylinux_2_17_ppc64le.whl", hash = "sha256:d57c9c387660b8893093459738b6abddbb30a7eab058b77b0d0d1c7d521ddfd7"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:2c226ef95eb2250974bf6fa7a842082b31f68385c4f3268370e3f3870e7859ee"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-manylinux_2_38_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:a311f1edc9967723d3511ea7d2708e2c3592e3405677bf53d5c7246753591fbb"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:ebb415404821b6d1c47353ebe9c8645967a5235e6d88f914147e7fd411419e6f"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-musllinux_1_2_ppc64le.whl", hash = "sha256:f07c9c4a5093258a03b28fab9b4f151aa376989e7f35f855088234e656ee6a94"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-musllinux_1_2_riscv64.whl", hash = "sha256:00ce1830d971f43b667abe4a56e42c1e2d594b32da4802e44a73bacacb25535f"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:cffe9d7697ae7456649617e8bb8d7a45afb71cd13f7ab22af3e5c61f04840908"},
+    {file = "psycopg2_binary-2.9.11-cp311-cp311-win_amd64.whl", hash = "sha256:304fd7b7f97eef30e91b8f7e720b3db75fee010b520e434ea35ed1ff22501d03"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:be9b840ac0525a283a96b556616f5b4820e0526addb8dcf6525a0fa162730be4"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:f090b7ddd13ca842ebfe301cd587a76a4cf0913b1e429eb92c1be5dbeb1a19bc"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:ab8905b5dcb05bf3fb22e0cf90e10f469563486ffb6a96569e51f897c750a76a"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-manylinux2014_ppc64le.manylinux_2_17_ppc64le.whl", hash = "sha256:bf940cd7e7fec19181fdbc29d76911741153d51cab52e5c21165f3262125685e"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:fa0f693d3c68ae925966f0b14b8edda71696608039f4ed61b1fe9ffa468d16db"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-manylinux_2_38_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:a1cf393f1cdaf6a9b57c0a719a1068ba1069f022a59b8b1fe44b006745b59757"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:ef7a6beb4beaa62f88592ccc65df20328029d721db309cb3250b0aae0fa146c3"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-musllinux_1_2_ppc64le.whl", hash = "sha256:31b32c457a6025e74d233957cc9736742ac5a6cb196c6b68499f6bb51390bd6a"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-musllinux_1_2_riscv64.whl", hash = "sha256:edcb3aeb11cb4bf13a2af3c53a15b3d612edeb6409047ea0b5d6a21a9d744b34"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:62b6d93d7c0b61a1dd6197d208ab613eb7dcfdcca0a49c42ceb082257991de9d"},
+    {file = "psycopg2_binary-2.9.11-cp312-cp312-win_amd64.whl", hash = "sha256:b33fabeb1fde21180479b2d4667e994de7bbf0eec22832ba5d9b5e4cf65b6c6d"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:b8fb3db325435d34235b044b199e56cdf9ff41223a4b9752e8576465170bb38c"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:366df99e710a2acd90efed3764bb1e28df6c675d33a7fb40df9b7281694432ee"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:8c55b385daa2f92cb64b12ec4536c66954ac53654c7f15a203578da4e78105c0"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-manylinux2014_ppc64le.manylinux_2_17_ppc64le.whl", hash = "sha256:c0377174bf1dd416993d16edc15357f6eb17ac998244cca19bc67cdc0e2e5766"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:5c6ff3335ce08c75afaed19e08699e8aacf95d4a260b495a4a8545244fe2ceb3"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-manylinux_2_38_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:84011ba3109e06ac412f95399b704d3d6950e386b7994475b231cf61eec2fc1f"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:ba34475ceb08cccbdd98f6b46916917ae6eeb92b5ae111df10b544c3a4621dc4"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-musllinux_1_2_ppc64le.whl", hash = "sha256:b31e90fdd0f968c2de3b26ab014314fe814225b6c324f770952f7d38abf17e3c"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-musllinux_1_2_riscv64.whl", hash = "sha256:d526864e0f67f74937a8fce859bd56c979f5e2ec57ca7c627f5f1071ef7fee60"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:04195548662fa544626c8ea0f06561eb6203f1984ba5b4562764fbeb4c3d14b1"},
+    {file = "psycopg2_binary-2.9.11-cp313-cp313-win_amd64.whl", hash = "sha256:efff12b432179443f54e230fdf60de1f6cc726b6c832db8701227d089310e8aa"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-macosx_10_13_x86_64.whl", hash = "sha256:92e3b669236327083a2e33ccfa0d320dd01b9803b3e14dd986a4fc54aa00f4e1"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:e0deeb03da539fa3577fcb0b3f2554a97f7e5477c246098dbb18091a4a01c16f"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:9b52a3f9bb540a3e4ec0f6ba6d31339727b2950c9772850d6545b7eae0b9d7c5"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-manylinux2014_ppc64le.manylinux_2_17_ppc64le.whl", hash = "sha256:db4fd476874ccfdbb630a54426964959e58da4c61c9feba73e6094d51303d7d8"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:47f212c1d3be608a12937cc131bd85502954398aaa1320cb4c14421a0ffccf4c"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-manylinux_2_38_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:e35b7abae2b0adab776add56111df1735ccc71406e56203515e228a8dc07089f"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:fcf21be3ce5f5659daefd2b3b3b6e4727b028221ddc94e6c1523425579664747"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-musllinux_1_2_ppc64le.whl", hash = "sha256:9bd81e64e8de111237737b29d68039b9c813bdf520156af36d26819c9a979e5f"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-musllinux_1_2_riscv64.whl", hash = "sha256:32770a4d666fbdafab017086655bcddab791d7cb260a16679cc5a7338b64343b"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:c3cb3a676873d7506825221045bd70e0427c905b9c8ee8d6acd70cfcbd6e576d"},
+    {file = "psycopg2_binary-2.9.11-cp314-cp314-win_amd64.whl", hash = "sha256:4012c9c954dfaccd28f94e84ab9f94e12df76b4afb22331b1f0d3154893a6316"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:20e7fb94e20b03dcc783f76c0865f9da39559dcc0c28dd1a3fce0d01902a6b9c"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:4bdab48575b6f870f465b397c38f1b415520e9879fdf10a53ee4f49dcbdf8a21"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:9d3a9edcfbe77a3ed4bc72836d466dfce4174beb79eda79ea155cc77237ed9e8"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-manylinux2014_ppc64le.manylinux_2_17_ppc64le.whl", hash = "sha256:44fc5c2b8fa871ce7f0023f619f1349a0aa03a0857f2c96fbc01c657dcbbdb49"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:9c55460033867b4622cda1b6872edf445809535144152e5d14941ef591980edf"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-manylinux_2_38_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:2d11098a83cca92deaeaed3d58cfd150d49b3b06ee0d0852be466bf87596899e"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-musllinux_1_2_aarch64.whl", hash = "sha256:691c807d94aecfbc76a14e1408847d59ff5b5906a04a23e12a89007672b9e819"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-musllinux_1_2_ppc64le.whl", hash = "sha256:8b81627b691f29c4c30a8f322546ad039c40c328373b11dff7490a3e1b517855"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-musllinux_1_2_riscv64.whl", hash = "sha256:b637d6d941209e8d96a072d7977238eea128046effbf37d1d8b2c0764750017d"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:41360b01c140c2a03d346cec3280cf8a71aa07d94f3b1509fa0161c366af66b4"},
+    {file = "psycopg2_binary-2.9.11-cp39-cp39-win_amd64.whl", hash = "sha256:875039274f8a2361e5207857899706da840768e2a775bf8c65e82f60b197df02"},
+]
+
+[[package]]
 name = "pycparser"
 version = "2.22"
 description = "C parser in Python"
@@ -3052,7 +3357,6 @@ files = [
 
 [package.dependencies]
 annotated-types = ">=0.6.0"
-email-validator = {version = ">=2.0.0", optional = true, markers = "extra == \"email\""}
 pydantic-core = "2.33.2"
 typing-extensions = ">=4.12.2"
 typing-inspection = ">=0.4.0"
@@ -3207,6 +3511,18 @@ files = [
 
 [package.extras]
 windows-terminal = ["colorama (>=0.4.6)"]
+
+[[package]]
+name = "pygtrie"
+version = "2.5.0"
+description = "A pure Python trie data structure implementation."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "pygtrie-2.5.0-py3-none-any.whl", hash = "sha256:8795cda8105493d5ae159a5bef313ff13156c5d4d72feddefacaad59f8c8ce16"},
+    {file = "pygtrie-2.5.0.tar.gz", hash = "sha256:203514ad826eb403dab1d2e2ddd034e0d1534bbe4dbe0213bb0593f66beba4e2"},
+]
 
 [[package]]
 name = "pyjwt"
@@ -3414,6 +3730,26 @@ files = [
 ]
 
 [[package]]
+name = "redis"
+version = "5.3.1"
+description = "Python client for Redis database and key-value store"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "redis-5.3.1-py3-none-any.whl", hash = "sha256:dc1909bd24669cc31b5f67a039700b16ec30571096c5f1f0d9d2324bff31af97"},
+    {file = "redis-5.3.1.tar.gz", hash = "sha256:ca49577a531ea64039b5a36db3d6cd1a0c7a60c34124d46924a45b956e8cf14c"},
+]
+
+[package.dependencies]
+async-timeout = {version = ">=4.0.3", markers = "python_full_version < \"3.11.3\""}
+PyJWT = ">=2.9.0"
+
+[package.extras]
+hiredis = ["hiredis (>=3.0.0)"]
+ocsp = ["cryptography (>=36.0.1)", "pyopenssl (==23.2.1)", "requests (>=2.31.0)"]
+
+[[package]]
 name = "referencing"
 version = "0.36.2"
 description = "JSON Referencing + Python"
@@ -3527,139 +3863,6 @@ files = [
 click = ">=8.1.7"
 rich = ">=13.7.1"
 typing-extensions = ">=4.12.2"
-
-[[package]]
-name = "rignore"
-version = "0.6.4"
-description = "Python Bindings for the ignore crate"
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "rignore-0.6.4-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:c201375cfe76e56e61fcdfe50d0882aafb49544b424bfc828e0508dc9fbc431b"},
-    {file = "rignore-0.6.4-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:4962d537e377394292c4828e1e9c620618dd8daa49ba746abe533733a89f8644"},
-    {file = "rignore-0.6.4-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8a6dd2f213cff6ca3c4d257fa3f5b0c7d4f6c23fe83bf292425fbe8d0c9c908a"},
-    {file = "rignore-0.6.4-cp310-cp310-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:64d379193f86a21fc93762783f36651927f54d5eea54c4922fdccb5e37076ed2"},
-    {file = "rignore-0.6.4-cp310-cp310-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:53c4f8682cf645b7a9160e0f1786af3201ed54a020bb4abd515c970043387127"},
-    {file = "rignore-0.6.4-cp310-cp310-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:af1246e672bd835a17d3ae91579b3c235ec55b10924ef22608d3e9ec90fa2699"},
-    {file = "rignore-0.6.4-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:82eed48fbc3097af418862e3c5c26fa81aa993e0d8b5f3a0a9a29cc6975eedff"},
-    {file = "rignore-0.6.4-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:df1215a071d42fd857fb6363c13803fbd915d48eaeaa9b103fb2266ba89c8995"},
-    {file = "rignore-0.6.4-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:82f2d318e66756066ed664015d8ca720078ab1d319377f1f61e3f4d01325faea"},
-    {file = "rignore-0.6.4-cp310-cp310-musllinux_1_2_armv7l.whl", hash = "sha256:e7d4258fc81051097c4d4c6ad17f0100c40088dbd2c6c31fc3c888a1d5a16190"},
-    {file = "rignore-0.6.4-cp310-cp310-musllinux_1_2_i686.whl", hash = "sha256:a0d0b9ec7929df8fd35ae89cb56619850dc140869139d61a2f4fa2941d2d1878"},
-    {file = "rignore-0.6.4-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:8883d079b948ffcd56b67572831c9b8949eca7fe2e8f7bdbf7691c7a9388f054"},
-    {file = "rignore-0.6.4-cp310-cp310-win32.whl", hash = "sha256:5aeac5b354e15eb9f7857b02ad2af12ae2c2ed25a61921b0bd7e272774530f77"},
-    {file = "rignore-0.6.4-cp310-cp310-win_amd64.whl", hash = "sha256:90419f881d05a1febb0578a175aa3e51d149ded1875421ed75a8af4392b7fe56"},
-    {file = "rignore-0.6.4-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:85f684dfc2c497e35ad34ffd6744a3bcdcac273ec1dbe7d0464bfa20f3331434"},
-    {file = "rignore-0.6.4-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:23954acc6debc852dbccbffbb70f0e26b12d230239e1ad0638eb5540694d0308"},
-    {file = "rignore-0.6.4-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b2bf793bd58dbf3dee063a758b23ea446b5f037370405ecefc78e1e8923fc658"},
-    {file = "rignore-0.6.4-cp311-cp311-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:1eaeaa5a904e098604ea2012383a721de06211c8b4013abf0d41c3cfeb982f4f"},
-    {file = "rignore-0.6.4-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:a48bdbeb03093e3fac2b40d62a718c59b5bb4f29cfdc8e7cbb360e1ea7bf0056"},
-    {file = "rignore-0.6.4-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:a8c5f9452d116be405f0967160b449c46ac929b50eaf527f33ee4680e3716e39"},
-    {file = "rignore-0.6.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6cf1039bfbdaa0f9710a6fb75436c25ca26d364881ec4d1e66d466bb36a7fb98"},
-    {file = "rignore-0.6.4-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:136629eb0ec2b6ac6ab34e71ce8065a07106fe615a53eceefc30200d528a4612"},
-    {file = "rignore-0.6.4-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:35e3d0ebaf01086e6454c3fecae141e2db74a5ddf4a97c72c69428baeff0b7d4"},
-    {file = "rignore-0.6.4-cp311-cp311-musllinux_1_2_armv7l.whl", hash = "sha256:7ed1f9010fa1ef5ea0b69803d1dfb4b7355921779e03a30396034c52691658bc"},
-    {file = "rignore-0.6.4-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:c16e9e898ed0afe2e20fa8d6412e02bd13f039f7e0d964a289368efd4d9ad320"},
-    {file = "rignore-0.6.4-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:7e6bc0bdcd404a7a8268629e8e99967127bb41e02d9eb09a471364c4bc25e215"},
-    {file = "rignore-0.6.4-cp311-cp311-win32.whl", hash = "sha256:fdd59bd63d2a49cc6d4f3598f285552ccb1a41e001df1012e0e0345cf2cabf79"},
-    {file = "rignore-0.6.4-cp311-cp311-win_amd64.whl", hash = "sha256:7bf5be0e8a01845e57b5faa47ef9c623bb2070aa2f743c2fc73321ffaae45701"},
-    {file = "rignore-0.6.4-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:74720d074b79f32449d5d212ce732e0144a294a184246d1f1e7bcc1fc5c83b69"},
-    {file = "rignore-0.6.4-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:0a8184fcf567bd6b6d7b85a0c138d98dd40f63054141c96b175844414c5530d7"},
-    {file = "rignore-0.6.4-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bcb0d7d7ecc3fbccf6477bb187c04a091579ea139f15f139abe0b3b48bdfef69"},
-    {file = "rignore-0.6.4-cp312-cp312-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:feac73377a156fb77b3df626c76f7e5893d9b4e9e886ac8c0f9d44f1206a2a91"},
-    {file = "rignore-0.6.4-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:465179bc30beb1f7a3439e428739a2b5777ed26660712b8c4e351b15a7c04483"},
-    {file = "rignore-0.6.4-cp312-cp312-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:4a4877b4dca9cf31a4d09845b300c677c86267657540d0b4d3e6d0ce3110e6e9"},
-    {file = "rignore-0.6.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:456456802b1e77d1e2d149320ee32505b8183e309e228129950b807d204ddd17"},
-    {file = "rignore-0.6.4-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:4c1ff2fc223f1d9473d36923160af37bf765548578eb9d47a2f52e90da8ae408"},
-    {file = "rignore-0.6.4-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:e445fbc214ae18e0e644a78086ea5d0f579e210229a4fbe86367d11a4cd03c11"},
-    {file = "rignore-0.6.4-cp312-cp312-musllinux_1_2_armv7l.whl", hash = "sha256:e07d9c5270fc869bc431aadcfb6ed0447f89b8aafaa666914c077435dc76a123"},
-    {file = "rignore-0.6.4-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:7a6ccc0ea83d2c0c6df6b166f2acacedcc220a516436490f41e99a5ae73b6019"},
-    {file = "rignore-0.6.4-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:536392c5ec91755db48389546c833c4ab1426fe03e5a8522992b54ef8a244e7e"},
-    {file = "rignore-0.6.4-cp312-cp312-win32.whl", hash = "sha256:f5f9dca46fc41c0a1e236767f68be9d63bdd2726db13a0ae3a30f68414472969"},
-    {file = "rignore-0.6.4-cp312-cp312-win_amd64.whl", hash = "sha256:e02eecb9e1b9f9bf7c9030ae73308a777bed3b2486204cc74dfcfbe699ab1497"},
-    {file = "rignore-0.6.4-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:2b3b1e266ce45189240d14dfa1057f8013ea34b9bc8b3b44125ec8d25fdb3985"},
-    {file = "rignore-0.6.4-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:45fe803628cc14714df10e8d6cdc23950a47eb9eb37dfea9a4779f4c672d2aa0"},
-    {file = "rignore-0.6.4-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e439f034277a947a4126e2da79dbb43e33d73d7c09d3d72a927e02f8a16f59aa"},
-    {file = "rignore-0.6.4-cp313-cp313-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:84b5121650ae24621154c7bdba8b8970b0739d8146505c9f38e0cda9385d1004"},
-    {file = "rignore-0.6.4-cp313-cp313-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:52b0957b585ab48a445cf8ac1dbc33a272ab060835e583b4f95aa8c67c23fb2b"},
-    {file = "rignore-0.6.4-cp313-cp313-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:50359e0d5287b5e2743bd2f2fbf05df619c8282fd3af12f6628ff97b9675551d"},
-    {file = "rignore-0.6.4-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:efe18096dcb1596757dfe0b412aab6d32564473ae7ee58dea0a8b4be5b1a2e3b"},
-    {file = "rignore-0.6.4-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:b79c212d9990a273ad91e8d9765e1766ef6ecedd3be65375d786a252762ba385"},
-    {file = "rignore-0.6.4-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:c6ffa7f2a8894c65aa5dc4e8ac8bbdf39a326c0c6589efd27686cfbb48f0197d"},
-    {file = "rignore-0.6.4-cp313-cp313-musllinux_1_2_armv7l.whl", hash = "sha256:a63f5720dffc8d8fb0a4d02fafb8370a4031ebf3f99a4e79f334a91e905b7349"},
-    {file = "rignore-0.6.4-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:ce33982da47ac5dc09d19b04fa8d7c9aa6292fc0bd1ecf33076989faa8886094"},
-    {file = "rignore-0.6.4-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:d899621867aa266824fbd9150e298f19d25b93903ef0133c09f70c65a3416eca"},
-    {file = "rignore-0.6.4-cp313-cp313-win32.whl", hash = "sha256:d0615a6bf4890ec5a90b5fb83666822088fbd4e8fcd740c386fcce51e2f6feea"},
-    {file = "rignore-0.6.4-cp313-cp313-win_amd64.whl", hash = "sha256:145177f0e32716dc2f220b07b3cde2385b994b7ea28d5c96fbec32639e9eac6f"},
-    {file = "rignore-0.6.4-cp313-cp313t-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e55bf8f9bbd186f58ab646b4a08718c77131d28a9004e477612b0cbbd5202db2"},
-    {file = "rignore-0.6.4-cp313-cp313t-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:2521f7bf3ee1f2ab22a100a3a4eed39a97b025804e5afe4323528e9ce8f084a5"},
-    {file = "rignore-0.6.4-cp313-cp313t-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:0cc35773a8a9c119359ef974d0856988d4601d4daa6f532c05f66b4587cf35bc"},
-    {file = "rignore-0.6.4-cp313-cp313t-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:b665b1ea14457d7b49e834baabc635a3b8c10cfb5cca5c21161fabdbfc2b850e"},
-    {file = "rignore-0.6.4-cp313-cp313t-musllinux_1_2_aarch64.whl", hash = "sha256:c7fd339f344a8548724f289495b835bed7b81174a0bc1c28c6497854bd8855db"},
-    {file = "rignore-0.6.4-cp313-cp313t-musllinux_1_2_armv7l.whl", hash = "sha256:91dc94b1cc5af8d6d25ce6edd29e7351830f19b0a03b75cb3adf1f76d00f3007"},
-    {file = "rignore-0.6.4-cp313-cp313t-musllinux_1_2_i686.whl", hash = "sha256:4d1918221a249e5342b60fd5fa513bf3d6bf272a8738e66023799f0c82ecd788"},
-    {file = "rignore-0.6.4-cp313-cp313t-musllinux_1_2_x86_64.whl", hash = "sha256:240777332b859dc89dcba59ab6e3f1e062bc8e862ffa3e5f456e93f7fd5cb415"},
-    {file = "rignore-0.6.4-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:66b0e548753e55cc648f1e7b02d9f74285fe48bb49cec93643d31e563773ab3f"},
-    {file = "rignore-0.6.4-cp314-cp314-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:6971ac9fdd5a0bd299a181096f091c4f3fd286643adceba98eccc03c688a6637"},
-    {file = "rignore-0.6.4-cp38-cp38-macosx_10_12_x86_64.whl", hash = "sha256:7fa603aeaf9c1c536fb55527e24816d797a607434e2a8d45acf1683efc566fb6"},
-    {file = "rignore-0.6.4-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:1721763b59437a7800be6641b83bbf6d5d3dd029363d7518a78b0486e3a988a1"},
-    {file = "rignore-0.6.4-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:74d66d3172f7e67f3c0bb3cfa4d7a7c234cc71480bd8878bdfbf55a9972e9956"},
-    {file = "rignore-0.6.4-cp38-cp38-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:867460ecf9d09bd2a43f4ba5ce97df1920d460527e623e8a2e4d27f64ca5909a"},
-    {file = "rignore-0.6.4-cp38-cp38-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:3c0b8cb660cb991a307bac05436d5c91829098c73bf0f4ffb3a3e035abf9fb34"},
-    {file = "rignore-0.6.4-cp38-cp38-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:857e37f42cb1c70eaac56d79d46d987cc4cb6926c5a577d34d1b948a9bb9d63e"},
-    {file = "rignore-0.6.4-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2fc23741267fea2df981e995c49ecca9f888d05e1436ef9b4fc4681f09dadc27"},
-    {file = "rignore-0.6.4-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:8efac1560a12e214771afcb70c7a8bf03966dfa8b3cda216a150b009b02da2dc"},
-    {file = "rignore-0.6.4-cp38-cp38-musllinux_1_2_aarch64.whl", hash = "sha256:1f05d1a8660f668b3b8b8b02edbdccd2a94b36680e7d7b28effb2374459c730a"},
-    {file = "rignore-0.6.4-cp38-cp38-musllinux_1_2_armv7l.whl", hash = "sha256:714aa11043ee6b2cf307b9be7319f05587a3a31bf9d3f24203e38fa43d6fd8e4"},
-    {file = "rignore-0.6.4-cp38-cp38-musllinux_1_2_i686.whl", hash = "sha256:1921d1fca65f1ae4b1e376239eba6c0c029361fea7f4aeadf3b372506fe2153f"},
-    {file = "rignore-0.6.4-cp38-cp38-musllinux_1_2_x86_64.whl", hash = "sha256:1b8493990fb15811525d81e7969e521a3071ac7ee998860b46e6ccbcce6eca4b"},
-    {file = "rignore-0.6.4-cp38-cp38-win32.whl", hash = "sha256:abadfd4dac2564f47ed26ae1b56b199dc5679d987e6c720868e26c53dae8dafa"},
-    {file = "rignore-0.6.4-cp38-cp38-win_amd64.whl", hash = "sha256:b149dbba5c786f29cba3ba3b43af8771a1969fa7ccde9895487260fb87e43a4e"},
-    {file = "rignore-0.6.4-cp39-cp39-macosx_10_12_x86_64.whl", hash = "sha256:6a336ec8b8d4da5063b09a95042740491ca822afb4fcce2530bb6e5e3baf0845"},
-    {file = "rignore-0.6.4-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:1ed8a704960fa3764b510a88ececef0c8d0447d4dfc64ab0e2e28321952cfed8"},
-    {file = "rignore-0.6.4-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c6e758c42ec19b3545e66f73dc7cf584f3ed7ea5029dd6716a3257f68db6c0c8"},
-    {file = "rignore-0.6.4-cp39-cp39-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:d8aca66ca2d08e0ae684dde745daecdfe8997a5c873c51b22771ecf3afb17d33"},
-    {file = "rignore-0.6.4-cp39-cp39-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:d2b14a8bc6929914c13d346607a076d2762e3ac26eb179866277c5ee06c9669f"},
-    {file = "rignore-0.6.4-cp39-cp39-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:5e903431cb6ac2a0416c5ffab16b103a1d85f2c337371f107a6838ece5f2052e"},
-    {file = "rignore-0.6.4-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:efa969d5d9148fcde194d9ddb547df2e7b6d321ad68d1dc906934e2c0fc3b939"},
-    {file = "rignore-0.6.4-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:e9f3602d3c162c3061a004648e5f1bf81a3ed54d2c3052318008a7f7cee6fb46"},
-    {file = "rignore-0.6.4-cp39-cp39-musllinux_1_2_aarch64.whl", hash = "sha256:8544f45f583a5ab7cd1ad38564c473b2aac136a3a770abbcb92fca6d37eaa84e"},
-    {file = "rignore-0.6.4-cp39-cp39-musllinux_1_2_armv7l.whl", hash = "sha256:0e1c95f7bd8a32fd483a86c301e88853f433423d7be58b173ee55d8612354ff0"},
-    {file = "rignore-0.6.4-cp39-cp39-musllinux_1_2_i686.whl", hash = "sha256:e1af717d4f01a84ecb6976badb20f37595bc31158fc60dae35f7f4cda16eef41"},
-    {file = "rignore-0.6.4-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:7b73b1626938a17b6766b092b71abc05fcdb1bf9ed9e4ee0b86362e8f81105f1"},
-    {file = "rignore-0.6.4-cp39-cp39-win32.whl", hash = "sha256:f9a7219da435de314a822988503f78fa4917e668e42985c6e427f2c66580a652"},
-    {file = "rignore-0.6.4-cp39-cp39-win_amd64.whl", hash = "sha256:b56e2ed34103afb39f767aa3787138738fb4b0a82d748269f27cc81d59940bc7"},
-    {file = "rignore-0.6.4-pp310-pypy310_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:40f493eef4b191777ba6d16879e3f73836142e04480d2e2f483675d652e6b559"},
-    {file = "rignore-0.6.4-pp310-pypy310_pp73-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:6790635e4df35333e27cd9e8b31d1d559826cf8b52f2c374b81ab698ac0140cf"},
-    {file = "rignore-0.6.4-pp310-pypy310_pp73-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:e326dab28787f07c6987c04686d4ad9d4b1e1caca1a15b85d443f91af2e133d2"},
-    {file = "rignore-0.6.4-pp310-pypy310_pp73-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:bd24cb0f58c6036b0f64ac6fc3f759b7f0de5506fa9f5a65e9d57f8cf44a026d"},
-    {file = "rignore-0.6.4-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:36cb95b0acae3c88b99a39f4246b395fd983848f3ec85ff26531d638b6584a45"},
-    {file = "rignore-0.6.4-pp310-pypy310_pp73-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:dfc954973429ce545d06163d87a6bae0ccea5703adbc957ee3d332c9592a58eb"},
-    {file = "rignore-0.6.4-pp310-pypy310_pp73-musllinux_1_2_aarch64.whl", hash = "sha256:cbed37d7c128b58ab9ade80e131efc4a48b6d045cd0bd1d3254cbb6b4a0ad67e"},
-    {file = "rignore-0.6.4-pp310-pypy310_pp73-musllinux_1_2_armv7l.whl", hash = "sha256:a0db910ef867d6ca2d52fefd22d8b6b63b20ec61661e2ad57e5c425a4e39431a"},
-    {file = "rignore-0.6.4-pp310-pypy310_pp73-musllinux_1_2_i686.whl", hash = "sha256:d664443a0a71d0a7d669adf32be59c4249bbff8b2810960f1b91d413ee4cf6b8"},
-    {file = "rignore-0.6.4-pp310-pypy310_pp73-musllinux_1_2_x86_64.whl", hash = "sha256:b9f6f1d91429b4a6772152848815cf1459663796b7b899a0e15d9198e32c9371"},
-    {file = "rignore-0.6.4-pp311-pypy311_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9b3da26d5a35ab15525b68d30b7352ad2247321f5201fc7e50ba6d547f78d5ea"},
-    {file = "rignore-0.6.4-pp311-pypy311_pp73-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:43028f3587558231d9fa68accff58c901dc50fd7bbc5764d3ee3df95290f6ebf"},
-    {file = "rignore-0.6.4-pp311-pypy311_pp73-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:bc56f1fcab7740751b98fead67b98ba64896424d8c834ea22089568db4e36dfa"},
-    {file = "rignore-0.6.4-pp311-pypy311_pp73-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:6033f2280898535a5f69935e08830a4e49ff1e29ef2c3f9a2b9ced59de06fdbf"},
-    {file = "rignore-0.6.4-pp311-pypy311_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8f5ac0c4e6a24be88f3821e101ef4665e9e1dc015f9e45109f32fed71dbcdafa"},
-    {file = "rignore-0.6.4-pp311-pypy311_pp73-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:8906ac8dd585ece83b1346e0470260a1951058cc0ef5a17542069bde4aa3f42f"},
-    {file = "rignore-0.6.4-pp311-pypy311_pp73-musllinux_1_2_aarch64.whl", hash = "sha256:14d095622969504a2e56f666286202dad583f08d3347b7be2d647ddfd7a9bf47"},
-    {file = "rignore-0.6.4-pp311-pypy311_pp73-musllinux_1_2_armv7l.whl", hash = "sha256:30f3d688df7eb4850318f1b5864d14f2c5fe5dbf3803ed0fc8329d2a7ad560dc"},
-    {file = "rignore-0.6.4-pp311-pypy311_pp73-musllinux_1_2_i686.whl", hash = "sha256:028f62a7b0a6235bb3f03c9e7f342352e7fa4b3f08c761c72f9de8faee40ed9c"},
-    {file = "rignore-0.6.4-pp311-pypy311_pp73-musllinux_1_2_x86_64.whl", hash = "sha256:7e6c425603db2c147eace4f752ca3cd4551e7568c9d332175d586c68bcbe3d8d"},
-    {file = "rignore-0.6.4-pp39-pypy39_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:518662bee0d4c6e2b220fef28e4851a149921ff0eac1a060f739c5490b72754e"},
-    {file = "rignore-0.6.4-pp39-pypy39_pp73-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:285b60526360aab1bf3cacdf6efe22b90f3b80392dcb4f8ae1e3257043c4c5ad"},
-    {file = "rignore-0.6.4-pp39-pypy39_pp73-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:72ec7c6fb883775a70bfc1ae6b8d2d709d76da16e8a23eeda93ca86a1a6b81e4"},
-    {file = "rignore-0.6.4-pp39-pypy39_pp73-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:54662abe43fa4dfc905bcb5af29163fe40dfc5ccae83fccbe6abd5a73b23d776"},
-    {file = "rignore-0.6.4-pp39-pypy39_pp73-musllinux_1_2_aarch64.whl", hash = "sha256:5219f65b5df40d86e11fc91a0d25ced2b324a7569ac730c75775198e9ef3f5b5"},
-    {file = "rignore-0.6.4-pp39-pypy39_pp73-musllinux_1_2_armv7l.whl", hash = "sha256:4be42621233bf03dd6acfe17cf7ad2a29bc84ac008564feea3ec412cabac5b5a"},
-    {file = "rignore-0.6.4-pp39-pypy39_pp73-musllinux_1_2_i686.whl", hash = "sha256:dd3db7ce8350a30507239a7d3239dc697c1a958c1f09e230529612de2882f2ff"},
-    {file = "rignore-0.6.4-pp39-pypy39_pp73-musllinux_1_2_x86_64.whl", hash = "sha256:3ac29f2366b3b0135de7c3a0ed6a9a62f793d8bb518e53479d23f1870fdc0fe9"},
-    {file = "rignore-0.6.4.tar.gz", hash = "sha256:e893fdd2d7fdcfa9407d0b7600ef2c2e2df97f55e1c45d4a8f54364829ddb0ab"},
-]
 
 [[package]]
 name = "rpds-py"
@@ -3814,63 +4017,6 @@ files = [
     {file = "rpds_py-0.26.0-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:69a607203441e07e9a8a529cff1d5b73f6a160f22db1097211e6212a68567d11"},
     {file = "rpds_py-0.26.0.tar.gz", hash = "sha256:20dae58a859b0906f0685642e591056f1e787f3a8b39c8e8749a45dc7d26bdb0"},
 ]
-
-[[package]]
-name = "sentry-sdk"
-version = "2.33.2"
-description = "Python client for Sentry (https://sentry.io)"
-optional = false
-python-versions = ">=3.6"
-groups = ["main"]
-files = [
-    {file = "sentry_sdk-2.33.2-py2.py3-none-any.whl", hash = "sha256:8d57a3b4861b243aa9d558fda75509ad487db14f488cbdb6c78c614979d77632"},
-    {file = "sentry_sdk-2.33.2.tar.gz", hash = "sha256:e85002234b7b8efac9b74c2d91dbd4f8f3970dc28da8798e39530e65cb740f94"},
-]
-
-[package.dependencies]
-certifi = "*"
-urllib3 = ">=1.26.11"
-
-[package.extras]
-aiohttp = ["aiohttp (>=3.5)"]
-anthropic = ["anthropic (>=0.16)"]
-arq = ["arq (>=0.23)"]
-asyncpg = ["asyncpg (>=0.23)"]
-beam = ["apache-beam (>=2.12)"]
-bottle = ["bottle (>=0.12.13)"]
-celery = ["celery (>=3)"]
-celery-redbeat = ["celery-redbeat (>=2)"]
-chalice = ["chalice (>=1.16.0)"]
-clickhouse-driver = ["clickhouse-driver (>=0.2.0)"]
-django = ["django (>=1.8)"]
-falcon = ["falcon (>=1.4)"]
-fastapi = ["fastapi (>=0.79.0)"]
-flask = ["blinker (>=1.1)", "flask (>=0.11)", "markupsafe"]
-grpcio = ["grpcio (>=1.21.1)", "protobuf (>=3.8.0)"]
-http2 = ["httpcore[http2] (==1.*)"]
-httpx = ["httpx (>=0.16.0)"]
-huey = ["huey (>=2)"]
-huggingface-hub = ["huggingface_hub (>=0.22)"]
-langchain = ["langchain (>=0.0.210)"]
-launchdarkly = ["launchdarkly-server-sdk (>=9.8.0)"]
-litestar = ["litestar (>=2.0.0)"]
-loguru = ["loguru (>=0.5)"]
-openai = ["openai (>=1.0.0)", "tiktoken (>=0.3.0)"]
-openfeature = ["openfeature-sdk (>=0.7.1)"]
-opentelemetry = ["opentelemetry-distro (>=0.35b0)"]
-opentelemetry-experimental = ["opentelemetry-distro"]
-pure-eval = ["asttokens", "executing", "pure_eval"]
-pymongo = ["pymongo (>=3.1)"]
-pyspark = ["pyspark (>=2.4.4)"]
-quart = ["blinker (>=1.1)", "quart (>=0.16.1)"]
-rq = ["rq (>=0.6)"]
-sanic = ["sanic (>=0.8)"]
-sqlalchemy = ["sqlalchemy (>=1.2)"]
-starlette = ["starlette (>=0.19.1)"]
-starlite = ["starlite (>=1.48)"]
-statsig = ["statsig (>=0.55.3)"]
-tornado = ["tornado (>=6)"]
-unleash = ["UnleashClient (>=6.0.1)"]
 
 [[package]]
 name = "setproctitle"
@@ -4500,6 +4646,18 @@ docs = ["Sphinx (>=4.1.2,<4.2.0)", "sphinx-rtd-theme (>=0.5.2,<0.6.0)", "sphinxc
 test = ["aiohttp (>=3.10.5)", "flake8 (>=5.0,<6.0)", "mypy (>=0.800)", "psutil", "pyOpenSSL (>=23.0.0,<23.1.0)", "pycodestyle (>=2.9.0,<2.10.0)"]
 
 [[package]]
+name = "vine"
+version = "5.1.0"
+description = "Python promises."
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "vine-5.1.0-py3-none-any.whl", hash = "sha256:40fdf3c48b2cfe1c38a49e9ae2da6fda88e4794c810050a728bd7413811fb1dc"},
+    {file = "vine-5.1.0.tar.gz", hash = "sha256:8b62e981d35c41049211cf62a0a1242d8c1ee9bd15bb196ce38aefd6799e61e0"},
+]
+
+[[package]]
 name = "watchfiles"
 version = "1.1.0"
 description = "Simple, modern and high performance file watching and code reload in python."
@@ -4617,6 +4775,18 @@ files = [
 
 [package.dependencies]
 anyio = ">=3.0.0"
+
+[[package]]
+name = "wcwidth"
+version = "0.2.14"
+description = "Measures the displayed width of unicode strings in a terminal"
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "wcwidth-0.2.14-py2.py3-none-any.whl", hash = "sha256:a7bb560c8aee30f9957e5f9895805edd20602f2d7f720186dfd906e82b4982e1"},
+    {file = "wcwidth-0.2.14.tar.gz", hash = "sha256:4d478375d31bc5395a3c55c40ccdf3354688364cd61c4f6adacaa9215d0b3605"},
+]
 
 [[package]]
 name = "websockets"
@@ -4983,4 +5153,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "9806fa134662ae51431aa3148df54da416ad05e2011887e5cd62fb24fbde4efe"
+content-hash = "a5d96f63f9618b80d3a073c424471800bbf0a7021374564d3de75c874a95a623"
