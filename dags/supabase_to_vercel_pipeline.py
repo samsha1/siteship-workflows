@@ -19,27 +19,34 @@ logger = logging.getLogger(__name__)
 os.environ['NO_PROXY'] = '*'  # Disable proxy for requests
 # _get_proxy_settings()
 
-# --- Airflow Variables ---
-TELEGRAM_BOT_TOKEN = Variable.get("TELEGRAM_BOT_TOKEN", default_var=None)
-TELEGRAM_CHAT_ID = Variable.get("TELEGRAM_CHAT_ID", default_var=None)
-SUPABASE_URL = Variable.get("SUPABASE_URL")
-SUPABASE_KEY = Variable.get("SUPABASE_KEY")
-VERCEL_ACCESS_TOKEN = Variable.get("VERCEL_ACCESS_TOKEN")
-VERCEL_GITHUB_REPO = Variable.get("VERCEL_GITHUB_REPO", default_var=None)
-VERCEL_TEAM = Variable.get("VERCEL_TEAM", default_var=None)
-TWILIO_ACCOUNT_SID = Variable.get("TWILIO_ACCOUNT_SID", default_var=None)
-TWILIO_AUTH_TOKEN = Variable.get("TWILIO_AUTH_TOKEN", default_var=None)
-TWILIO_PRD_PHONE_NUM = Variable.get("TWILIO_PHONE_NUM", default_var=None)
-TWILIO_SANDBOX_PHONE_NUM = Variable.get("TWILIO_SANDBOX_PHONE_NUM", default_var=None)
-GITHUB_REPO = Variable.get("GITHUB_REPO")
-GITHUB_ACCESS_TOKEN = Variable.get("GITHUB_ACCESS_TOKEN")
-MESSAGE_TO = Variable.get("NOTIFICATION_PHONE")  # Configurable phone number
 
 
 HTTP_PROXIES = {
     'http':None,
     'https':None
 }
+
+def get_env(key: str, required: bool = True, default: str | None = None):
+    """Safely fetch environment variables with fallback."""
+    value = os.getenv(key, default)
+    if required and not value:
+        logging.warning(f"[WARN] Environment variable '{key}' is missing.")
+    return value
+
+TELEGRAM_BOT_TOKEN = get_env("TELEGRAM_BOT_TOKEN", required=False)
+TELEGRAM_CHAT_ID = get_env("TELEGRAM_CHAT_ID", required=False)
+SUPABASE_URL = get_env("SUPABASE_URL")
+SUPABASE_KEY = get_env("SUPABASE_KEY")
+VERCEL_ACCESS_TOKEN = get_env("VERCEL_ACCESS_TOKEN")
+VERCEL_GITHUB_REPO = get_env("VERCEL_GITHUB_REPO", required=False)
+VERCEL_TEAM = get_env("VERCEL_TEAM", required=False)
+TWILIO_ACCOUNT_SID = get_env("TWILIO_ACCOUNT_SID", required=False)
+TWILIO_AUTH_TOKEN = get_env("TWILIO_AUTH_TOKEN", required=False)
+TWILIO_PRD_PHONE_NUM = get_env("TWILIO_PHONE_NUM", required=False)
+TWILIO_SANDBOX_PHONE_NUM = get_env("TWILIO_SANDBOX_PHONE_NUM", required=False)
+GITHUB_REPO = get_env("GITHUB_REPO")
+GITHUB_ACCESS_TOKEN = get_env("GITHUB_ACCESS_TOKEN")
+MESSAGE_TO = get_env("NOTIFICATION_PHONE", required=False)
 
 
 # --- Notification Wrapper ---

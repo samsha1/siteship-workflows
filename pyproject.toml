@@ -11,7 +11,7 @@ python = ">=3.11,<3.13"
 requests = "^2.32.4"
 PyGithub = "^2.6.1"
 python-dotenv = "^1.0.1"
-apache-airflow = {version = "3.0.3", extras = ["sqlite"]}
+apache-airflow = {version = "3.1.1-python3.11", extras = ["sqlite"]}
 apache-airflow-providers-fab = "^2.3.0"
 twilio = "^9.6.5"
 apache-airflow-providers-github = "^2.9.1"
