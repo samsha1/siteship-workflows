@@ -5,6 +5,12 @@ services:
     image: ghcr.io/samsha1/siteship-workflows:${SOFTWARE_VERSION_TAG}
     container_name: siteship-workflows
     restart: always
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     env_file: .env
     depends_on:
       - postgres
@@ -13,12 +19,13 @@ services:
       # Airflow Core Config
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
-      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
       AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
       AIRFLOW__VARIABLES__SUPABASE_URL: ${SUPABASE_URL}
       AIRFLOW__VARIABLES__SUPABASE_KEY: ${SUPABASE_KEY}
       AIRFLOW__VARIABLES__GHCR_USERNAME: ${GHCR_USERNAME}
       AIRFLOW__VARIABLES__GHCR_PAT: ${GHCR_PAT}
+      AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
       AIRFLOW__VARIABLES__GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
       AIRFLOW__VARIABLES__SUPABASE_DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
       AIRFLOW__VARIABLES__GEMINI_API_KEY: ${GEMINI_API_KEY}
@@ -34,7 +41,7 @@ services:
       AIRFLOW__VARIABLES__TWILIO_PHONE_NUM: ${TWILIO_PHONE_NUM}
       AIRFLOW__VARIABLES__VERCEL_GITHUB_REPO: ${VERCEL_GITHUB_REPO}
       AIRFLOW__VARIABLES__GITHUB_REPO: ${GITHUB_REPO}
-      AIRFLOW__CORE__FERNET_KEY: "hqfbPPaBNil6v3SzrGM7qqgx-1A9QkLrQnDEktKL8aE="
+      AIRFLOW__CORE__FERNET_KEY: ""
       AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
 
       # Webserver Auth
@@ -74,11 +81,6 @@ services:
             --password ${_AIRFLOW_WWW_USER_PASSWORD} || true; 
         airflow api-server
       '
-    deploy:
-        resources:
-            limits:
-              cpus: '0.5'
-              memory: 512M
     networks:
       - airflow
 
@@ -114,7 +116,7 @@ services:
       AIRFLOW__VARIABLES__TWILIO_PHONE_NUM: ${TWILIO_PHONE_NUM}
       AIRFLOW__VARIABLES__VERCEL_GITHUB_REPO: ${VERCEL_GITHUB_REPO}
       AIRFLOW__VARIABLES__GITHUB_REPO: ${GITHUB_REPO}
-      AIRFLOW__CORE__FERNET_KEY: "hqfbPPaBNil6v3SzrGM7qqgx-1A9QkLrQnDEktKL8aE="
+      AIRFLOW__CORE__FERNET_KEY: ""
       AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
       AIRFLOW_HOME: /opt/airflow
     volumes:
@@ -125,11 +127,6 @@ services:
         bash -c "
             airflow db migrate && airflow scheduler
         "
-    deploy:
-        resources:
-            limits:
-              cpus: '0.5'
-              memory: 512M
     networks:
       - airflow
   worker:
@@ -148,6 +145,7 @@ services:
       AIRFLOW__VARIABLES__SUPABASE_URL: ${SUPABASE_URL}
       AIRFLOW__VARIABLES__SUPABASE_KEY: ${SUPABASE_KEY}
       AIRFLOW__VARIABLES__GHCR_USERNAME: ${GHCR_USERNAME}
+      DUMB_INIT_SETSID: "0"
       AIRFLOW__VARIABLES__GHCR_PAT: ${GHCR_PAT}
       AIRFLOW__VARIABLES__GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
       AIRFLOW__VARIABLES__SUPABASE_DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
@@ -164,7 +162,7 @@ services:
       AIRFLOW__VARIABLES__TWILIO_PHONE_NUM: ${TWILIO_PHONE_NUM}
       AIRFLOW__VARIABLES__VERCEL_GITHUB_REPO: ${VERCEL_GITHUB_REPO}
       AIRFLOW__VARIABLES__GITHUB_REPO: ${GITHUB_REPO}
-      AIRFLOW__CORE__FERNET_KEY: "hqfbPPaBNil6v3SzrGM7qqgx-1A9QkLrQnDEktKL8aE="
+      AIRFLOW__CORE__FERNET_KEY: ""
       AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
       AIRFLOW_HOME: /opt/airflow
 
@@ -187,13 +185,26 @@ services:
     restart: always
     expose:
       - "6379"
+    ports:
+      - 172.17.0.1:64408:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 50
     networks:
       - airflow
 
   postgres:
-    image: postgres:14
+    image: postgres:17
     container_name: siteship-postgres
     restart: always
+    ports:
+      - 172.17.0.1:30782:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: ${ADMIN_PASSWORD}
