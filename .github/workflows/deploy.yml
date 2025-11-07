@@ -55,7 +55,6 @@ jobs:
           key: ${{ secrets.ELESTIO_SSH_KEY }}
           source: "airflow_sync.tar.gz"
           target: "/tmp/"
-
       - name: SSH into Server and Update Airflow DAGs
         uses: appleboy/ssh-action@v1.2.0
         with:
