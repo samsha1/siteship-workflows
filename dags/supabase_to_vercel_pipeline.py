@@ -20,12 +20,6 @@ os.environ['NO_PROXY'] = '*'  # Disable proxy for requests
 # _get_proxy_settings()
 
 
-
-HTTP_PROXIES = {
-    'http':None,
-    'https':None
-}
-
 def get_env(key: str, required: bool = True, default: str | None = None):
     """Safely fetch environment variables with fallback."""
     value = os.getenv(key, default)
@@ -33,20 +27,11 @@ def get_env(key: str, required: bool = True, default: str | None = None):
         logging.warning(f"[WARN] Environment variable '{key}' is missing.")
     return value
 
-TELEGRAM_BOT_TOKEN = get_env("TELEGRAM_BOT_TOKEN", required=False)
-TELEGRAM_CHAT_ID = get_env("TELEGRAM_CHAT_ID", required=False)
-SUPABASE_URL = get_env("SUPABASE_URL")
-SUPABASE_KEY = get_env("SUPABASE_KEY")
-VERCEL_ACCESS_TOKEN = get_env("VERCEL_ACCESS_TOKEN")
-VERCEL_GITHUB_REPO = get_env("VERCEL_GITHUB_REPO", required=False)
-VERCEL_TEAM = get_env("VERCEL_TEAM", required=False)
-TWILIO_ACCOUNT_SID = get_env("TWILIO_ACCOUNT_SID", required=False)
-TWILIO_AUTH_TOKEN = get_env("TWILIO_AUTH_TOKEN", required=False)
-TWILIO_PRD_PHONE_NUM = get_env("TWILIO_PHONE_NUM", required=False)
-TWILIO_SANDBOX_PHONE_NUM = get_env("TWILIO_SANDBOX_PHONE_NUM", required=False)
-GITHUB_REPO = get_env("GITHUB_REPO")
-GITHUB_ACCESS_TOKEN = get_env("GITHUB_ACCESS_TOKEN")
-MESSAGE_TO = get_env("NOTIFICATION_PHONE", required=False)
+# TELEGRAM_BOT_TOKEN = get_env("TELEGRAM_BOT_TOKEN", required=False)
+# TELEGRAM_CHAT_ID = get_env("TELEGRAM_CHAT_ID", required=False)
+# SUPABASE_URL = get_env("SUPABASE_URL")
+# SUPABASE_KEY = get_env("SUPABASE_KEY")
+
 
 
 # --- Notification Wrapper ---
@@ -92,6 +77,8 @@ def unzip_file(file_url: str, username: str, extract_to: str = "/tmp/code") -> s
 # @with_notification("Pushing code to GitHub", MESSAGE_TO)
 def push_to_github(unzipped_file_dir: str, username: str) -> str:
     """Pushes files to GitHub by creating a new branch with a commit."""
+    GITHUB_ACCESS_TOKEN = get_env("GITHUB_ACCESS_TOKEN")
+    GITHUB_REPO = get_env("GITHUB_REPO")
     g = Github(GITHUB_ACCESS_TOKEN)
     repo = g.get_repo(GITHUB_REPO)
 
@@ -132,6 +119,14 @@ def push_to_github(unzipped_file_dir: str, username: str) -> str:
 # @with_notification("Deploying to Vercel", MESSAGE_TO)
 def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
     """Deploys a branch to Vercel and returns the deployment URL."""
+    VERCEL_ACCESS_TOKEN = get_env("VERCEL_ACCESS_TOKEN")
+    VERCEL_GITHUB_REPO = get_env("VERCEL_GITHUB_REPO", required=False)
+    VERCEL_TEAM = get_env("VERCEL_TEAM", required=False)
+    
+    HTTP_PROXIES = {
+        'http':None,
+        'https':None
+    }
     url = "https://api.vercel.com/v6/deployments"
     payload = {
         "name": project_name,
@@ -195,6 +190,10 @@ def deploy_to_vercel(branch: str, project_name: str, username: str) -> str:
 
 def notify_twilio_whatsapp(message: str, to_number: str):
     """Sends a WhatsApp message using Twilio."""
+    TWILIO_ACCOUNT_SID = get_env("TWILIO_ACCOUNT_SID", required=False)
+    TWILIO_AUTH_TOKEN = get_env("TWILIO_AUTH_TOKEN", required=False)
+    TWILIO_PRD_PHONE_NUM = get_env("TWILIO_PHONE_NUM", required=False)
+    TWILIO_SANDBOX_PHONE_NUM = get_env("TWILIO_SANDBOX_PHONE_NUM", required=False)
     try:
         twilio_client = TwilioClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
         logger.info(f"Sending WhatsApp message to {to_number}: {message}")
@@ -214,6 +213,7 @@ def notify_twilio_whatsapp(message: str, to_number: str):
 def send_final_notification(alias_url: str):
     """Sends a final WhatsApp notification with the deployment URL."""
     message = f"🚀 Deployment completed! Your project is live at {alias_url}" if alias_url else "❌ Deployment failed: No URL available"
+    MESSAGE_TO = get_env("NOTIFICATION_PHONE", required=False)
     notify_twilio_whatsapp(message=message, to_number=MESSAGE_TO)
 
 @task()
