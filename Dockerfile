@@ -7,8 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential curl git libpq-dev libssl-dev libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry globally with explicit permissions
-RUN curl -sSL https://install.python-poetry.org | python3 - --install-dir=/opt/poetry \
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - \
     && chmod -R 755 /opt/poetry \
     && ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry
 
