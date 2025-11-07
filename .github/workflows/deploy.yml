@@ -46,5 +46,5 @@ jobs:
             cd /opt/app/
             export SOFTWARE_VERSION_TAG=${{ github.ref_name }}
             docker compose pull
-            docker compose up -d --no-deps airflow-scheduler airflow-worker airflow-apiserver airflow-triggerer
+            docker compose up -d --no-deps airflow-scheduler airflow-worker airflow-apiserver airflow-triggerer airflow-dag-processor
             docker system prune -f
