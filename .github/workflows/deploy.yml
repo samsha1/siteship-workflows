@@ -3,19 +3,20 @@ name: Sync Airflow DAGs on Tag Push
 on:
   push:
     tags:
-      - 'v*'   # e.g. v1.0.0, v2.1.3
+      - 'v*'
 
 jobs:
   sync-dags:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Archive DAGs and Plugins
         run: |
-          tar -czf airflow_sync.tar.gz dags pyproject.toml poetry.lock
+          FNAME="airflow_sync_${{ github.run_id }}.tar.gz"
+          tar -czf "$FNAME" dags pyproject.toml poetry.lock
+          echo "ARCHIVE_NAME=$FNAME" >> $GITHUB_ENV
 
       - name: Copy to Elestio Server
         uses: appleboy/scp-action@v0.1.7
@@ -23,8 +24,8 @@ jobs:
           host: ${{ secrets.ELESTIO_HOST }}
           username: ${{ secrets.ELESTIO_USER }}
           key: ${{ secrets.ELESTIO_SSH_KEY }}
-          source: "airflow_sync.tar.gz"
-          target: "/tmp/airflow_sync.tar.gz"
+          source: "${{ env.ARCHIVE_NAME }}"
+          target: "/tmp/${{ env.ARCHIVE_NAME }}"
 
       - name: SSH into Server and Update Airflow DAGs
         uses: appleboy/ssh-action@v1.2.0
@@ -33,23 +34,28 @@ jobs:
           username: ${{ secrets.ELESTIO_USER }}
           key: ${{ secrets.ELESTIO_SSH_KEY }}
           script: |
-            cd /opt/app
+            ARCHIVE="/tmp/${{ env.ARCHIVE_NAME }}"
 
-            echo "Cleaning up any old archive..."
-            if [ -d "/tmp/airflow_sync.tar.gz" ]; then
-              rm -rf /tmp/airflow_sync.tar.gz
+            echo "Checking archive exists and is regular file: $ARCHIVE"
+            if [ ! -f "$ARCHIVE" ]; then
+              echo "ERROR: expected regular file $ARCHIVE but not found. Listing /tmp:"
+              ls -la /tmp | sed -n '1,200p'
+              exit 2
             fi
 
-            echo "Extracting new DAGs & plugins..."
-            tar -xzf /tmp/airflow_sync.tar.gz -C .
+            cd /opt/app
 
-            echo "Installing Poetry dependencies..."
+            echo "Extracting new DAGs & plugins from $ARCHIVE..."
+            tar -xzf "$ARCHIVE" -C .
+
+            echo "Installing Poetry dependencies (scheduler + worker)..."
             docker exec -i app-airflow-scheduler-1 bash -c "cd /opt/airflow && poetry install --no-interaction --no-ansi"
+            docker exec -i app-airflow-worker-1 bash -c "cd /opt/airflow && poetry install --no-interaction --no-ansi" || true
 
             echo "Restarting Airflow core services..."
             docker compose restart airflow-scheduler airflow-worker airflow-triggerer airflow-dag-processor
 
-            echo "Cleaning up..."
-            rm -f /tmp/airflow_sync.tar.gz
+            echo "Cleaning up archive..."
+            rm -f "$ARCHIVE"
 
             echo "✅ DAGs synced and Airflow restarted!"
