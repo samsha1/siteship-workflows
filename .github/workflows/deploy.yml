@@ -14,9 +14,8 @@ jobs:
 
       - name: Archive DAGs and Plugins
         run: |
-          FNAME="airflow_sync_${{ github.run_id }}.tar.gz"
+          FNAME="airflow_sync.tar.gz"
           tar -czf "$FNAME" dags pyproject.toml poetry.lock
-          echo "ARCHIVE_NAME=$FNAME" >> $GITHUB_ENV
       - name: Cleanup old archive on remote
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -34,8 +33,8 @@ jobs:
           host: ${{ secrets.ELESTIO_HOST }}
           username: ${{ secrets.ELESTIO_USER }}
           key: ${{ secrets.ELESTIO_SSH_KEY }}
-          source: "${{ env.ARCHIVE_NAME }}"
-          target: "/tmp/${{ env.ARCHIVE_NAME }}"
+          source: "airflow_sync.tar.gz"
+          target: "/tmp/airflow_sync.tar.gz"
 
       - name: SSH into Server and Update Airflow DAGs
         uses: appleboy/ssh-action@v1.2.0
@@ -44,7 +43,7 @@ jobs:
           username: ${{ secrets.ELESTIO_USER }}
           key: ${{ secrets.ELESTIO_SSH_KEY }}
           script: |
-            ARCHIVE="/tmp/${{ env.ARCHIVE_NAME }}"
+            ARCHIVE="/tmp/airflow_sync.tar.gz"
 
             echo "Checking archive exists and is regular file: $ARCHIVE"
             if [ ! -f "$ARCHIVE" ]; then
