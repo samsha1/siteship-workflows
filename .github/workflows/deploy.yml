@@ -38,8 +38,8 @@ jobs:
       #       ghcr.io/${{ github.repository_owner }}/siteship-workflows:${{ env.TAG }}
       - name: Debug environment
         run: |
-          echo "HOST=${{ elestio.ELESTIO_HOST }}"
-          echo "USER=${{ elestio.ELESTIO_USER }}"
+          echo "HOST=${{ secrets.ELESTIO_HOST }}"
+          echo "USER=${{ secrets.ELESTIO_USER }}"
       # - name: SSH to Elestio and update Airflow
       #   uses: appleboy/ssh-action@v1.2.0
       #   with:
