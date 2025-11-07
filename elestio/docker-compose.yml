@@ -1,9 +1,10 @@
 version: "3.8"
 
 services:
-  siteship-workflows:
+  airflow-workflows:
     image: ghcr.io/samsha1/siteship-workflows:${SOFTWARE_VERSION_TAG}
     container_name: siteship-workflows
+    hostname: airflow-workflows
     restart: always
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/version"]
@@ -20,6 +21,11 @@ services:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
       AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+      AIRFLOW__CORE__PARALLELISM: 16
+      AIRFLOW__CORE__DAG_CONCURRENCY: 32
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: 16
+      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: 8
+      AIRFLOW__CELERY__WORKER_CONCURRENCY: 4
       AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
       AIRFLOW__VARIABLES__SUPABASE_URL: ${SUPABASE_URL}
       AIRFLOW__VARIABLES__SUPABASE_KEY: ${SUPABASE_KEY}
@@ -51,7 +57,7 @@ services:
       _AIRFLOW_WWW_USER_EMAIL: ${ADMIN_EMAIL}
       _AIRFLOW_WWW_USER_FIRSTNAME: Air
       _AIRFLOW_WWW_USER_LASTNAME: Flow
-
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
       # Other useful vars
       AIRFLOW__CORE__LOAD_EXAMPLES: "true"
       AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"
@@ -84,9 +90,10 @@ services:
     networks:
       - airflow
 
-  scheduler:
+  airflow-scheduler:
     image: ghcr.io/samsha1/siteship-workflows:${SOFTWARE_VERSION_TAG}
     container_name: siteship-scheduler
+    hostname: airflow-scheduler
     restart: always
     env_file: .env
     depends_on:
@@ -94,8 +101,14 @@ services:
       - redis
     environment:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__PARALLELISM: 16
+      AIRFLOW__CORE__DAG_CONCURRENCY: 32
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: 16
+      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: 8
+      AIRFLOW__CELERY__WORKER_CONCURRENCY: 4
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
-      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
       AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
       AIRFLOW__VARIABLES__SUPABASE_URL: ${SUPABASE_URL}
       AIRFLOW__VARIABLES__SUPABASE_KEY: ${SUPABASE_KEY}
@@ -129,9 +142,10 @@ services:
         "
     networks:
       - airflow
-  worker:
+  airfow-worker:
     image: ghcr.io/samsha1/siteship-workflows:${SOFTWARE_VERSION_TAG}
     container_name: siteship-worker
+    hostname: airflow-worker
     restart: always
     env_file: .env
     depends_on:
@@ -139,8 +153,14 @@ services:
       - postgres
     environment:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__PARALLELISM: 16
+      AIRFLOW__CORE__DAG_CONCURRENCY: 32
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: 16
+      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: 8
+      AIRFLOW__CELERY__WORKER_CONCURRENCY: 4
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
-      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
       AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
       AIRFLOW__VARIABLES__SUPABASE_URL: ${SUPABASE_URL}
       AIRFLOW__VARIABLES__SUPABASE_KEY: ${SUPABASE_KEY}
@@ -179,9 +199,65 @@ services:
     networks:
       - airflow
 
+  airflow-dag-processor:
+    image: ghcr.io/samsha1/siteship-workflows:${SOFTWARE_VERSION_TAG}
+    container_name: siteship-dag-processor
+    hostname: airflow-dag-processor
+    restart: always
+    env_file: .env
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__PARALLELISM: 16
+      AIRFLOW__CORE__DAG_CONCURRENCY: 32
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: 16
+      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: 8
+      AIRFLOW__CELERY__WORKER_CONCURRENCY: 4
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:${ADMIN_PASSWORD}@postgres:5432/airflow
+      AIRFLOW__VARIABLES__SUPABASE_URL: ${SUPABASE_URL}
+      AIRFLOW__VARIABLES__SUPABASE_KEY: ${SUPABASE_KEY}
+      AIRFLOW__VARIABLES__GHCR_USERNAME: ${GHCR_USERNAME}
+      DUMB_INIT_SETSID: "0"
+      AIRFLOW__VARIABLES__GHCR_PAT: ${GHCR_PAT}
+      AIRFLOW__VARIABLES__GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
+      AIRFLOW__VARIABLES__SUPABASE_DB_PASSWORD: ${SUPABASE_DB_PASSWORD}
+      AIRFLOW__VARIABLES__GEMINI_API_KEY: ${GEMINI_API_KEY}
+      AIRFLOW__VARIABLES__EMBEDDING_MODEL: ${EMBEDDING_MODEL}
+      AIRFLOW__VARIABLES__COMPLETION_MODEL: ${COMPLETION_MODEL}
+      AIRFLOW__VARIABLES__OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AIRFLOW__VARIABLES__TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      AIRFLOW__VARIABLES__VERCEL_ACCESS_TOKEN: ${VERCEL_ACCESS_TOKEN}
+      AIRFLOW__VARIABLES__NOTIFICATION_PHONE: ${NOTIFICATION_PHONE}
+      AIRFLOW__VARIABLES__TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      AIRFLOW__VARIABLES__TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      AIRFLOW__VARIABLES__TWILIO_SANDBOX_PHONE_NUM: ${TWILIO_SANDBOX_PHONE_NUM}
+      AIRFLOW__VARIABLES__TWILIO_PHONE_NUM: ${TWILIO_PHONE_NUM}
+      AIRFLOW__VARIABLES__VERCEL_GITHUB_REPO: ${VERCEL_GITHUB_REPO}
+      AIRFLOW__VARIABLES__GITHUB_REPO: ${GITHUB_REPO}
+      AIRFLOW__CORE__FERNET_KEY: ""
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
+      AIRFLOW_HOME: /opt/airflow
+
+    # volumes:
+    #   - ./logs:/opt/airflow/logs
+
+    # command: >
+    #   bash -c "airflow celery worker"
+    command: >
+      bash -c "
+          airflow db migrate && airflow dag-processor
+      "
+    networks:
+      - airflow
   redis:
     image: redis:7-alpine
     container_name: siteship-redis
+    hostname: redis
     restart: always
     expose:
       - "6379"

@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 # -----------------------------
 # Stage 1: Builder
 # -----------------------------
@@ -29,8 +27,16 @@ USER root
 # Copy poetry-installed dependencies
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
-# Copy DAGs
-COPY dags/ /opt/airflow/dags/
-
 USER airflow
 WORKDIR /opt/airflow
+
+# Copy DAGs
+COPY dags/ ./dags/
+COPY plugins/ ./plugins/
+COPY config/ ./config/
+
+
+ENTRYPOINT ["/entrypoint"]
+CMD ["api-server"]
+
+

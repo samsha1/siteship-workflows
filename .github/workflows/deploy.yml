@@ -36,3 +36,15 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/siteship-workflows:latest
             ghcr.io/${{ github.repository_owner }}/siteship-workflows:${{ env.TAG }}
+      - name: SSH to Elestio and update Airflow
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.ELESTIO_HOST }}
+          username: ${{ secrets.ELESTIO_USER }}
+          key: ${{ secrets.ELESTIO_SSH_KEY }}
+          script: |
+            cd /path/to/airflow
+            export SOFTWARE_VERSION_TAG=${{ github.ref_name }}
+            docker compose pull
+            docker compose up -d --no-deps airflow-scheduler airflow-worker airflow-apiserver airflow-triggerer
+            docker system prune -f
