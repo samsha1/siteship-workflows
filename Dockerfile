@@ -23,7 +23,7 @@ RUN poetry config virtualenvs.create false \
 # -----------------------------
 # Stage 2: Runtime (Airflow DAG Image)
 # -----------------------------
-
+USER root
 # Copy poetry-installed dependencies
 COPY --from=builder /usr/local/lib/python3.12/site-packages /home/airflow/.local/lib/python3.12/site-packages/
 # /home/airflow/.local/lib/python3.12/site-packages/
