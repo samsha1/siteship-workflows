@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.ELESTIO_USER }}
           key: ${{ secrets.ELESTIO_SSH_KEY }}
           script: |
-            cd /path/to/airflow
+            cd /opt/airflow
             export SOFTWARE_VERSION_TAG=${{ github.ref_name }}
             docker compose pull
             docker compose up -d --no-deps airflow-scheduler airflow-worker airflow-apiserver airflow-triggerer
