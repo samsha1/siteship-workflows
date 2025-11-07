@@ -18,6 +18,8 @@ WORKDIR /home/airflow
 # Copy Poetry configuration files
 COPY --chown=airflow:airflow pyproject.toml poetry.lock* ./
 
+RUN pwd
+
 # Install dependencies to the airflow user's site-packages
 RUN poetry config virtualenvs.create false \
     && poetry install --only main --no-interaction --no-ansi
