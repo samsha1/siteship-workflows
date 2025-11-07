@@ -1,7 +1,10 @@
 # -----------------------------
 # Stage 1: Builder
 # -----------------------------
-FROM python:3.12-slim AS builder
+# FROM python:3.12-slim AS builder
+FROM apache/airflow:latest
+
+USER root
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential curl git libpq-dev libssl-dev libffi-dev \
@@ -20,9 +23,6 @@ RUN poetry config virtualenvs.create false \
 # -----------------------------
 # Stage 2: Runtime (Airflow DAG Image)
 # -----------------------------
-FROM apache/airflow:latest
-
-USER root
 
 # Copy poetry-installed dependencies
 COPY --from=builder /usr/local/lib/python3.12/site-packages /home/airflow/.local/lib/python3.12/site-packages/
