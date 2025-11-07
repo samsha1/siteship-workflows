@@ -6,7 +6,7 @@ import os
 import zipfile
 import io
 from functools import wraps
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 from airflow.models import Variable
 from github import Github
 from github.InputGitTreeElement import InputGitTreeElement
