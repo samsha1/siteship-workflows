@@ -26,7 +26,7 @@ USER root
 
 # Copy poetry-installed dependencies
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-
+# /home/airflow/.local/lib/python3.12/site-packages/
 USER airflow
 WORKDIR /opt/airflow
 
