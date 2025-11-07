@@ -31,7 +31,7 @@ USER airflow
 WORKDIR /opt/airflow
 
 # Copy DAGs
-COPY dags/ ./dags/
+# COPY dags/ ./dags/
 # COPY plugins/ ./plugins/
 # COPY config/ ./config/
 
