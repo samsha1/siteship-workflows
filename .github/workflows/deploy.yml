@@ -15,7 +15,7 @@ jobs:
 
       - name: Archive DAGs and Plugins
         run: |
-          tar -czf airflow_sync.tar.gz dags plugins config pyproject.toml poetry.lock
+          tar -czf airflow_sync.tar.gz dags pyproject.toml poetry.lock
 
       - name: Copy to Elestio Server
         uses: appleboy/scp-action@v0.1.7
