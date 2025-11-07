@@ -11,7 +11,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract tag
+        id: vars
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/siteship-workflows:latest
+            ghcr.io/${{ github.repository_owner }}/siteship-workflows:${{ env.TAG }}
       - name: Archive DAGs and Plugins
         run: |
           FNAME="airflow_sync.tar.gz"
@@ -57,14 +77,10 @@ jobs:
             echo "Extracting new DAGs & plugins from $ARCHIVE..."
             tar -xzf "$ARCHIVE" -C .
 
-            echo "Installing Poetry dependencies (scheduler + worker)..."
-            docker exec -i app-airflow-scheduler-1 bash -c "cd /opt/airflow && poetry install --no-interaction --no-ansi"
-            docker exec -i app-airflow-worker-1 bash -c "cd /opt/airflow && poetry install --no-interaction --no-ansi" || true
-
             echo "Restarting Airflow core services..."
             docker compose restart airflow-scheduler airflow-worker airflow-triggerer airflow-dag-processor
 
-            echo "Cleaning up archive..."
+            echo "Cleaning up archive..."x
             rm -f "$ARCHIVE"
 
             echo "✅ DAGs synced and Airflow restarted!"
