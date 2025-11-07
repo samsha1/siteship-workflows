@@ -35,16 +35,21 @@ jobs:
           script: |
             cd /opt/app
 
+            echo "Cleaning up any old archive..."
+            if [ -d "/tmp/airflow_sync.tar.gz" ]; then
+              rm -rf /tmp/airflow_sync.tar.gz
+            fi
+
             echo "Extracting new DAGs & plugins..."
             tar -xzf /tmp/airflow_sync.tar.gz -C .
 
             echo "Installing Poetry dependencies..."
-            docker exec -i airflow-scheduler bash -c "cd /opt/airflow && poetry install --no-interaction --no-ansi"
+            docker exec -i app-airflow-scheduler-1 bash -c "cd /opt/airflow && poetry install --no-interaction --no-ansi"
 
             echo "Restarting Airflow core services..."
             docker compose restart airflow-scheduler airflow-worker airflow-triggerer airflow-dag-processor
 
             echo "Cleaning up..."
-            rm /tmp/airflow_sync.tar.gz
+            rm -f /tmp/airflow_sync.tar.gz
 
             echo "✅ DAGs synced and Airflow restarted!"
