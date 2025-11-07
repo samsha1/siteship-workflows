@@ -237,7 +237,11 @@ def cleanup_temp_dir(temp_dir: str):
 )
 def supabase_to_vercel_pipeline():
     # Extract DAG run configuration
-    conf = {"url": "{{ dag_run.conf['url'] }}", "username": "{{ dag_run.conf['username'] }}", "project_name": "{{ dag_run.conf['project_name'] }}"}
+    conf = {
+        "url": "{{ dag_run.conf.get('url') }}",
+        "username": "{{ dag_run.conf.get('username') }}",
+        "project_name": "{{ dag_run.conf.get('project_name') }}"
+    }
     
     # Task instances
     unzipped_dir = unzip_file(file_url=conf["url"], username=conf["username"])
