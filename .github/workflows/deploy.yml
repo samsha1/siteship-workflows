@@ -17,7 +17,17 @@ jobs:
           FNAME="airflow_sync_${{ github.run_id }}.tar.gz"
           tar -czf "$FNAME" dags pyproject.toml poetry.lock
           echo "ARCHIVE_NAME=$FNAME" >> $GITHUB_ENV
-
+      - name: Cleanup old archive on remote
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.ELESTIO_HOST }}
+          username: ${{ secrets.ELESTIO_USER }}
+          key: ${{ secrets.ELESTIO_SSH_KEY }}
+          script: |
+            if [ -e /tmp/airflow_sync.tar.gz ]; then
+              echo "Removing old /tmp/airflow_sync.tar.gz..."
+              rm -rf /tmp/airflow_sync.tar.gz
+            fi
       - name: Copy to Elestio Server
         uses: appleboy/scp-action@v0.1.7
         with:
