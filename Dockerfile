@@ -31,11 +31,6 @@ RUN pip list --user > /home/airflow/installed_packages.txt
 # Set Airflow working directory
 WORKDIR /opt/airflow
 
-# Copy DAGs, plugins, and config (uncomment as needed)
-# COPY --chown=airflow:airflow dags/ ./dags/
-# COPY --chown=airflow:airflow plugins/ ./plugins/
-# COPY --chown=airflow:airflow config/ ./config/
-
 # Entry point for Airflow
 ENTRYPOINT ["/entrypoint"]
 CMD ["api-server"]

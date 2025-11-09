@@ -110,6 +110,11 @@ def cleanup_temp_dir(unzipped_dir: str, **kwargs):
 )
 def supabase_to_vercel_pipeline():
     # Task instances (dependencies via >>)
+    # conf ={
+    #     "url": "https://yknecccdejmevqjwvwhd.supabase.co/storage/v1/object/public/projects/9779867397267/generated_website/20251101_131839.zip",
+    #     "username": "testuser",
+    #     "project_name": "testproject"
+    # }
     unzipped_dir = unzip_file()
     branch = push_to_github(unzipped_file_dir=unzipped_dir)
     alias_url = deploy_to_vercel(branch=branch)
