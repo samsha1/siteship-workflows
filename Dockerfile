@@ -7,9 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential curl git libpq-dev libssl-dev libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - \
-    && chmod -R 755 /opt/poetry \
-    && ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry
+RUN pip install --no-cache-dir poetry
 
 # Verify Poetry and Python version (for debugging)
 RUN poetry --version && python3 --version
@@ -30,7 +28,3 @@ RUN pip list --user > /home/airflow/installed_packages.txt
 
 # Set Airflow working directory
 WORKDIR /opt/airflow
-
-# Entry point for Airflow
-ENTRYPOINT ["/entrypoint"]
-CMD ["api-server"]
