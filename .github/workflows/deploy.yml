@@ -29,6 +29,8 @@ jobs:
               - 'poetry.lock'
               - 'requirements*.txt'
               - 'docker-compose*.yml'
+              - '.github/workflows/deploy.yml'
+              - '.version'
             dags:
               - 'dags/**'
               - 'plugins/**'
@@ -89,10 +91,10 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install rsync
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y rsync
+      # - name: Install rsync
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y rsync
 
       - name: Deploy DAGs via rsync
         uses: burnett01/rsync-deployments@7.0.1
