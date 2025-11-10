@@ -8,6 +8,11 @@ from airflow.sdk import dag, task
 from github import Github
 from github.InputGitTreeElement import InputGitTreeElement
 from twilio.rest import Client as TwilioClient
+from logging import getLogger
+
+
+
+logger = getLogger(__name__)
 
 # --- Task Functions ---
 @task
@@ -37,6 +42,8 @@ def push_to_github(unzipped_file_dir: str, **kwargs) -> str:
     ref = repo.get_git_ref(f"heads/{repo.default_branch}")
     latest_commit = repo.get_git_commit(ref.object.sha)
     base_tree = latest_commit.tree
+    logger.info(f"Base tree:  {base_tree}")
+    logger.info(f"Preparing files for commit... {github_token} {repo_name} {username}")
     elements = []
     for root, _, files in os.walk(unzipped_file_dir):
         for file_name in files:
@@ -49,6 +56,7 @@ def push_to_github(unzipped_file_dir: str, **kwargs) -> str:
                 elements.append(InputGitTreeElement(path=rel_path, mode="100644", type="blob", sha=blob.sha))
             except UnicodeDecodeError:
                 continue
+    logger.info(f"Elements prepared: {len(elements)} files")
     new_tree = repo.create_git_tree(elements, base_tree)
     new_commit = repo.create_git_commit(f"Deploy {branch}", new_tree, [latest_commit])
     repo.create_git_ref(ref=f"refs/heads/{branch}", sha=new_commit.sha)
