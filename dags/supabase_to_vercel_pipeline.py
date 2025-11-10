@@ -45,6 +45,7 @@ def push_to_github(unzipped_file_dir: str, **kwargs) -> str:
     logger.info(f"Unzipped dir: {unzipped_file_dir}")
     elements = []
     for root, _, files in os.walk(unzipped_file_dir):
+        logger.info(f"Walking through: {root}, files: {files}")
         for file_name in files:
             file_path = os.path.join(root, file_name)
             rel_path = os.path.relpath(file_path, unzipped_file_dir)
