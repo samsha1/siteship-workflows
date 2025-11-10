@@ -42,8 +42,7 @@ def push_to_github(unzipped_file_dir: str, **kwargs) -> str:
     ref = repo.get_git_ref(f"heads/{repo.default_branch}")
     latest_commit = repo.get_git_commit(ref.object.sha)
     base_tree = latest_commit.tree
-    logger.info(f"Base tree:  {base_tree}")
-    logger.info(f"Preparing files for commit... {github_token} {repo_name} {username}")
+    logger.info(f"Unzipped dir: {unzipped_file_dir}")
     elements = []
     for root, _, files in os.walk(unzipped_file_dir):
         for file_name in files:
