@@ -56,7 +56,7 @@ def push_to_github(unzipped_file_dir: str, **kwargs) -> str:
                 elements.append(InputGitTreeElement(path=rel_path, mode="100644", type="blob", sha=blob.sha))
             except UnicodeDecodeError:
                 continue
-    logger.info(f"Elements prepared: {len(elements)} files")
+    logger.info(f"Elements prepared: {len(elements)} file")
     new_tree = repo.create_git_tree(elements, base_tree)
     new_commit = repo.create_git_commit(f"Deploy {branch}", new_tree, [latest_commit])
     repo.create_git_ref(ref=f"refs/heads/{branch}", sha=new_commit.sha)
