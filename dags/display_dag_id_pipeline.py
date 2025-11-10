@@ -14,7 +14,7 @@ def print_dag_id(**kwargs):
     schedule=None,
     catchup=False,
     default_args={"owner": "airflow", "retries": 1},
-    description="Simple DAG to display the DAG ID when triggered",
+    description="Simple DAG to display the DAG ID when trkiggered",
 )
 def display_dag_id_pipeline():
     print_dag_id()
