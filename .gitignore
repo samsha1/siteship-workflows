@@ -97,4 +97,5 @@ env.json
 siteship-wtf-*/
 _Dockerfile.bk
 elestio/.env
+keys/
 # poetry.lock
