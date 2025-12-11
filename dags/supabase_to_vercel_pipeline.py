@@ -14,7 +14,7 @@ from logging import getLogger
 
 logger = getLogger(__name__)
 
-# --- Task Function ---
+# --- Task Functions ---
 @task
 def unzip_file(**kwargs) -> str:
     """Download and unzip a file from Supabase to a temporary directory."""
