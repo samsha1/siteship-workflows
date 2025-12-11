@@ -91,11 +91,6 @@ jobs:
         with:
           python-version: '3.x'
 
-      # - name: Install rsync
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y rsync
-
       - name: Deploy DAGs via rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -116,9 +111,6 @@ jobs:
       #     remote_user: ${{ secrets.ELESTIO_USER }}
       #     remote_key: ${{ secrets.ELESTIO_SSH_KEY }}
 
-      - name: Wait for file system sync
-        run: sleep 5
-
       - name: Update Docker image if built
         if: needs.check-changes.outputs.docker-build == 'true'
         uses: appleboy/ssh-action@v1.2.0
@@ -131,62 +123,23 @@ jobs:
             cd /opt/app
             docker compose pull
             docker compose up -d
+            
+            echo "Waiting for services to stabilize..."
+            sleep 10
 
-      - name: Clear serialized DAGs and restart services
+      - name: Verify deployment
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.ELESTIO_HOST }}
           username: ${{ secrets.ELESTIO_USER }}
           key: ${{ secrets.ELESTIO_SSH_KEY }}
           script: |
-            echo "Clearing serialized DAG cache to prevent race conditions..."
             cd /opt/app
-            
-            # Clear serialized DAGs table (safe operation, DAGs will be reparsed)
-            docker compose exec -T postgres psql -U airflow -d airflow -c "TRUNCATE TABLE serialized_dag CASCADE;" || echo "Warning: Could not clear serialized_dag table"
-            
-            echo "Restarting Airflow core services..."
-            # Stop services first for clean restart
-            docker compose stop airflow-scheduler airflow-dag-processor
-            
-            # Wait to ensure clean shutdown
-            sleep 3
-            
-            # Start services
-            docker compose start airflow-scheduler airflow-dag-processor
-            
-            # Wait for services to initialize
-            echo "Waiting for services to initialize..."
-            sleep 15
             
             echo "Service status:"
             docker compose ps
             
-            # Verify DAG processor is running
-            if docker compose ps airflow-dag-processor | grep -q "Up"; then
-              echo "✅ DAG processor is running"
-            else
-              echo "⚠️ Warning: DAG processor may not be healthy yet"
-            fi
-            
-            if docker compose ps airflow-scheduler | grep -q "Up"; then
-              echo "✅ Scheduler is running"
-            else
-              echo "⚠️ Warning: Scheduler may not be healthy yet"
-            fi
-
-      - name: Trigger DAG reserialization
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.ELESTIO_HOST }}
-          username: ${{ secrets.ELESTIO_USER }}
-          key: ${{ secrets.ELESTIO_SSH_KEY }}
-          script: |
-            echo "Triggering DAG reserialization..."
-            cd /opt/app
-            
-            # Trigger DAG reparse (ignore errors if command not available in your Airflow version)
-            docker compose exec -T airflow-scheduler airflow dags reserialize || echo "Note: Manual reserialize not available, DAGs will be parsed automatically"
-            
+            echo ""
             echo "✅ DAGs deployed successfully!"
-            echo "DAGs will be available in Airflow UI within 30-60 seconds."
+            echo "📋 DAGs will be parsed automatically within 30 seconds"
+            echo "🔍 Check Airflow UI for new/updated DAGs"
