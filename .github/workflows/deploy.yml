@@ -91,11 +91,29 @@ jobs:
         with:
           python-version: '3.x'
 
-      # - name: Install rsync
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y rsync
-
+      - name: Install rsync
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync
+      - name: Deploy DAGs (Simple SCP approach)
+        run: |
+          SSH_KEY_FILE=$(mktemp)
+          echo "${{ secrets.ELESTIO_SSH_KEY }}" | tr -d '\r' > "$SSH_KEY_FILE"
+          chmod 600 "$SSH_KEY_FILE"
+          
+          ssh -i "$SSH_KEY_FILE" \
+            -o StrictHostKeyChecking=no \
+            -o ConnectTimeout=10 \
+            ${{ secrets.ELESTIO_USER }}@${{ secrets.ELESTIO_HOST }} \
+            "echo 'SSH test successful'"
+          
+          rsync -avz \
+            -e "ssh -i $SSH_KEY_FILE -o StrictHostKeyChecking=no" \
+            --delete \
+            dags/ \
+            ${{ secrets.ELESTIO_USER }}@${{ secrets.ELESTIO_HOST }}:/opt/app/dags/
+          
+          rm -f "$SSH_KEY_FILE"
       - name: Deploy DAGs via rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -105,16 +123,6 @@ jobs:
           remote_host: ${{ secrets.ELESTIO_HOST }}
           remote_user: ${{ secrets.ELESTIO_USER }}
           remote_key: ${{ secrets.ELESTIO_SSH_KEY }}
-
-      # - name: Deplosy plugins via rsync
-      #   uses: burnett01/rsync-deployments@7.0.1
-      #   with:
-      #     switches: -avz --delete
-      #     path: plugins/
-      #     remote_path: /opt/app/plugins/
-      #     remote_host: ${{ secrets.ELESTIO_HOST }}
-      #     remote_user: ${{ secrets.ELESTIO_USER }}
-      #     remote_key: ${{ secrets.ELESTIO_SSH_KEY }}
 
       - name: Update Docker image if built
         if: needs.check-changes.outputs.docker-build == 'true'
