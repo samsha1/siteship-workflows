@@ -106,7 +106,7 @@ jobs:
           remote_user: ${{ secrets.ELESTIO_USER }}
           remote_key: ${{ secrets.ELESTIO_SSH_KEY }}
 
-      # - name: Deploy plugins via rsync
+      # - name: Deplosy plugins via rsync
       #   uses: burnett01/rsync-deployments@7.0.1
       #   with:
       #     switches: -avz --delete
