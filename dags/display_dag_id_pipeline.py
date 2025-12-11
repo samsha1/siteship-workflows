@@ -1,5 +1,5 @@
 from datetime import datetime
-from airflow.decorators import dag, task  # Correct import path
+from airflow.sdk import dag, task  # Correct import path
 
 @task
 def print_dag_id(**kwargs):
