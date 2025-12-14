@@ -2,12 +2,15 @@
 Airflow Plugin: Fix for SerializedDagModel race condition bug
 This patches the write_dag method to handle None values and concurrent writes properly.
 Author: System Fix
-Version: 1.2 - Fixed for Airflow 2.10.4 (removed invalid bundle_name, fixed instantiation)
+Version: 1.4 - Optimized for Airflow 3.1.1 with proper field setting and bundle_name support
 """
 from __future__ import annotations
+import json
 import logging
 from datetime import timedelta
+from hashlib import md5
 from typing import TYPE_CHECKING
+import zlib
 from airflow.plugins_manager import AirflowPlugin
 from airflow.models.serialized_dag import SerializedDagModel
 from airflow.serialization.serialized_objects import SerializedDAG
@@ -24,6 +27,7 @@ def patched_write_dag(
     dag: DAG,
     min_update_interval: int | None = None,
     processor_subdir: str | None = None,
+    bundle_name: str | None = None,
     session: Session = None,
 ) -> bool:
     """
@@ -31,19 +35,14 @@ def patched_write_dag(
     1. None values when DAG doesn't exist yet
     2. Race conditions between scheduler and dag-processor
     3. Database row locking to prevent concurrent writes
-   
-    This fixes: AttributeError: 'NoneType' object has no attribute '_data'
+    4. bundle_name parameter for Airflow 3.1.1
     """
     try:
-        # Serialize the DAG (redundant but aligns with original init)
-        serialized_dag = SerializedDAG.from_dict(SerializedDAG.to_dict(dag))
-       
         # Query with row-level locking to prevent race conditions
-        # with_for_update() ensures only one process can modify this row at a time
         latest_ser_dag = (
             session.query(SerializedDagModel)
             .filter(SerializedDagModel.dag_id == dag.dag_id)
-            .with_for_update(nowait=False) # Wait for lock instead of failing
+            .with_for_update(nowait=False)
             .one_or_none()
         )
        
@@ -61,37 +60,47 @@ def patched_write_dag(
                 )
                 return False
        
-        # Additional check: If exists and hash matches, skip to match original behavior
-        new_dag_hash = SerializedDagModel(dag=dag, processor_subdir=processor_subdir).dag_hash
-        if latest_ser_dag and latest_ser_dag.dag_hash == new_dag_hash and latest_ser_dag.processor_subdir == processor_subdir:
+        # Prepare data and hash
+        dag_data = SerializedDAG.to_dict(dag)
+        dag_data_json = json.dumps(dag_data, sort_keys=True).encode("utf-8")
+        new_dag_hash = md5(dag_data_json).hexdigest()
+       
+        # Additional check: If exists and hash/subdir/bundle match, skip
+        if (
+            latest_ser_dag
+            and latest_ser_dag.dag_hash == new_dag_hash
+            and latest_ser_dag.processor_subdir == processor_subdir
+            and latest_ser_dag.bundle_name == bundle_name
+        ):
             log.debug("Serialized DAG (%s) is unchanged. Skipping writing to DB", dag.dag_id)
             return False
        
         # CRITICAL FIX: Create new SerializedDagModel if it doesn't exist
-        # Use proper instantiation with dag object
         if latest_ser_dag is None:
             log.info("Creating new serialized DAG entry for: %s", dag.dag_id)
-            latest_ser_dag = SerializedDagModel(dag=dag, processor_subdir=processor_subdir)
+            latest_ser_dag = SerializedDagModel(
+                dag=dag,
+                processor_subdir=processor_subdir,
+                bundle_name=bundle_name
+            )
             session.add(latest_ser_dag)
-            # Flush to ensure the object is persisted before we try to update it
             session.flush()
-            log.debug("Successfully serialized new DAG: %s", dag.dag_id)
+            log.debug("Successfully serialized new DAG: %s (bundle: %s)", dag.dag_id, bundle_name or "default")
             return True
        
-        # Now it's safe to update the existing entry
-        # Update fields to match what init would set
+        # Update existing entry
         latest_ser_dag.fileloc = dag.fileloc
-        latest_ser_dag.fileloc_hash = SerializedDagModel.fileloc_hash(dag.fileloc)  # Use class method if available, else compute
-        latest_ser_dag._data = serialized_dag._data if hasattr(serialized_dag, '_data') else None
-        latest_ser_dag._data_compressed = serialized_dag._data_compressed if hasattr(serialized_dag, '_data_compressed') else None
+        latest_ser_dag.fileloc_hash = SerializedDagModel.dag_fileloc_hash(dag.fileloc)
+        latest_ser_dag.data_compressed = zlib.compress(dag_data_json, level=6)  # Assuming compression is enabled; adjust if not
         latest_ser_dag.last_updated = timezone.utcnow()
         latest_ser_dag.dag_hash = new_dag_hash
         latest_ser_dag.processor_subdir = processor_subdir
+        latest_ser_dag.bundle_name = bundle_name
        
-        # Commit the changes
+        # Flush changes
         session.flush()
        
-        log.debug("Successfully serialized DAG: %s", dag.dag_id)
+        log.debug("Successfully serialized DAG: %s (bundle: %s)", dag.dag_id, bundle_name or "default")
         return True
        
     except Exception as e:
@@ -102,12 +111,13 @@ def patched_write_dag(
             str(e),
             exc_info=True,
         )
-        # Rollback on any error to maintain database consistency
         session.rollback()
         return False
+# Apply the patch at module load time
 log.info("=" * 80)
-log.info("🔧 Applying SerializedDagModel.write_dag patch v1.2 (Airflow 2.10.4)")
+log.info("🔧 Applying SerializedDagModel.write_dag patch v1.4 (Airflow 3.1.1)")
 log.info(" This fixes: AttributeError: 'NoneType' object has no attribute '_data'")
+log.info(" Optimized field setting for compatibility")
 log.info("=" * 80)
 SerializedDagModel.write_dag = staticmethod(patched_write_dag)
 class SerializedDagFixPlugin(AirflowPlugin):

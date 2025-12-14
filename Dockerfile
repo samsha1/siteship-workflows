@@ -1,5 +1,5 @@
-# Pin to stable Airflow version that has better serialization handling
-FROM apache/airflow:2.10.4-python3.12
+# Pin to stable Airflow version that matches the Poetry dependency
+FROM apache/airflow:3.1.1-python3.12
 
 # Install dependencies as root
 USER root
