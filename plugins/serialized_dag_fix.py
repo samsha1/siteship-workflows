@@ -3,7 +3,7 @@ Airflow Plugin: Fix for SerializedDagModel race condition bug
 This patches the write_dag method to handle None values and concurrent writes properly.
 
 Author: System Fix
-Version: 1.0
+Version: 1.1 - Fixed for Airflow 2.10.4+ with bundle_name parameter
 """
 from __future__ import annotations
 
@@ -31,6 +31,7 @@ _original_write_dag = SerializedDagModel.write_dag
 def patched_write_dag(
     dag: DAG,
     min_update_interval: int | None = None,
+    bundle_name: str | None = None,  # Added for Airflow 2.10.4+
     session: Session = None,
 ) -> bool:
     """
@@ -38,6 +39,7 @@ def patched_write_dag(
     1. None values when DAG doesn't exist yet
     2. Race conditions between scheduler and dag-processor
     3. Database row locking to prevent concurrent writes
+    4. bundle_name parameter for Airflow 2.10.4+
     
     This fixes: AttributeError: 'NoneType' object has no attribute '_data'
     """
@@ -83,10 +85,14 @@ def patched_write_dag(
         latest_ser_dag.dag_hash = SerializedDagModel._hash_dag(dag)
         latest_ser_dag.fileloc = dag.fileloc
         
+        # Set bundle_name if provided (Airflow 2.10.4+)
+        if hasattr(latest_ser_dag, 'bundle_name') and bundle_name is not None:
+            latest_ser_dag.bundle_name = bundle_name
+        
         # Commit the changes
         session.flush()
         
-        log.debug("Successfully serialized DAG: %s", dag.dag_id)
+        log.debug("Successfully serialized DAG: %s (bundle: %s)", dag.dag_id, bundle_name or "default")
         return True
         
     except Exception as e:
@@ -104,8 +110,9 @@ def patched_write_dag(
 
 # Apply the patch at module load time
 log.info("=" * 80)
-log.info("🔧 Applying SerializedDagModel.write_dag patch for race condition fix")
+log.info("🔧 Applying SerializedDagModel.write_dag patch v1.1 (Airflow 2.10.4+)")
 log.info("   This fixes: AttributeError: 'NoneType' object has no attribute '_data'")
+log.info("   Support for bundle_name parameter added")
 log.info("=" * 80)
 
 SerializedDagModel.write_dag = staticmethod(patched_write_dag)
