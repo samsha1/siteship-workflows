@@ -31,7 +31,7 @@ RUN pip list --user > /home/airflow/installed_packages.txt
 
 # Create a patch file for the serialization bug if it still exists
 # This will be loaded by Airflow's plugin system
-COPY --chown=airflow:airflow patches/serialized_dag_fix.py /opt/airflow/plugins/
+COPY --chown=airflow:airflow plugins/serialized_dag_fix.py /opt/airflow/plugins/
 
 # Set Airflow working directory
 WORKDIR /opt/airflow
