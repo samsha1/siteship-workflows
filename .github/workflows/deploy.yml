@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     tags: ['v*']
-  workflow_dispatch:  # Allow manual triggers
+  workflow_dispatch:
 
 jobs:
   check-changes:
@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # Needed for git diff to work properly
+          fetch-depth: 2
       
       - name: Check for relevant changes
         id: changes
@@ -31,9 +31,9 @@ jobs:
               - 'docker-compose*.yml'
               - '.github/workflows/deploy.yml'
               - '.version'
+              - 'plugins/**'
             dags:
               - 'dags/**'
-              - 'plugins/**'
 
   build-docker:
     needs: check-changes
@@ -91,11 +91,6 @@ jobs:
         with:
           python-version: '3.x'
 
-      # - name: Install rsync
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y rsync
-
       - name: Deploy DAGs via rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -106,17 +101,17 @@ jobs:
           remote_user: ${{ secrets.ELESTIO_USER }}
           remote_key: ${{ secrets.ELESTIO_SSH_KEY }}
 
-      # - name: Deploy plugins via rsync
-      #   uses: burnett01/rsync-deployments@7.0.1
-      #   with:
-      #     switches: -avz --delete
-      #     path: plugins/
-      #     remote_path: /opt/app/plugins/
-      #     remote_host: ${{ secrets.ELESTIO_HOST }}
-      #     remote_user: ${{ secrets.ELESTIO_USER }}
-      #     remote_key: ${{ secrets.ELESTIO_SSH_KEY }}
+      - name: Deploy plugins via rsync
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: plugins/
+          remote_path: /opt/app/plugins/
+          remote_host: ${{ secrets.ELESTIO_HOST }}
+          remote_user: ${{ secrets.ELESTIO_USER }}
+          remote_key: ${{ secrets.ELESTIO_SSH_KEY }}
 
-      - name: Update Docker image if built
+      - name: Update Docker image and config if built
         if: needs.check-changes.outputs.docker-build == 'true'
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -124,27 +119,36 @@ jobs:
           username: ${{ secrets.ELESTIO_USER }}
           key: ${{ secrets.ELESTIO_SSH_KEY }}
           script: |
-            echo "Updating Docker image to latest version..."
+            echo "📦 Updating Docker images and configuration..."
             cd /opt/app
+            
+            # Pull latest images
             docker compose pull
+            
+            # Recreate containers with new configuration
             docker compose up -d
+            
+            echo "⏳ Waiting for services to initialize..."
+            sleep 15
+            
+            echo "✅ Update complete!"
 
-      - name: Restart Airflow services
+      - name: Verify deployment
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.ELESTIO_HOST }}
           username: ${{ secrets.ELESTIO_USER }}
           key: ${{ secrets.ELESTIO_SSH_KEY }}
           script: |
-            echo "Restarting Airflow core services..."
             cd /opt/app
             
-            # Only restart services needed for DAG processing
-            docker compose restart airflow-scheduler airflow-dag-processor
-            
-            # Wait a bit and check services are healthy
-            sleep 10
-            echo "Service status:"
+            echo "📊 Service Status:"
             docker compose ps
-
-            echo "✅ DAGs deployed successfully!"
+            
+            echo ""
+            echo "🔍 Checking for serialization fix plugin..."
+            docker compose logs airflow-dag-processor 2>&1 | grep -i "serialized_dag_fix" | tail -3 || echo "⚠️  Plugin logs not found yet (may still be loading)"
+            
+            echo ""
+            echo "✅ Deployment complete!"
+            echo "📋 DAGs will be parsed and available within 30-60 seconds"
