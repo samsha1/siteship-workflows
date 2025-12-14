@@ -2,7 +2,7 @@
 Airflow Plugin: Fix for SerializedDagModel race condition bug
 This patches the write_dag method to handle None values and concurrent writes properly.
 Author: System Fix
-Version: 1.4 - Optimized for Airflow 3.1.1 with proper field setting and bundle_name support
+Version: 1.5 - Fully compatible with Airflow 3.1.5 (added bundle_version support)
 """
 from __future__ import annotations
 import json
@@ -28,6 +28,7 @@ def patched_write_dag(
     min_update_interval: int | None = None,
     processor_subdir: str | None = None,
     bundle_name: str | None = None,
+    bundle_version: str | None = None,
     session: Session = None,
 ) -> bool:
     """
@@ -35,7 +36,7 @@ def patched_write_dag(
     1. None values when DAG doesn't exist yet
     2. Race conditions between scheduler and dag-processor
     3. Database row locking to prevent concurrent writes
-    4. bundle_name parameter for Airflow 3.1.1
+    4. bundle_name and bundle_version parameters for Airflow 3.1+
     """
     try:
         # Query with row-level locking to prevent race conditions
@@ -71,6 +72,7 @@ def patched_write_dag(
             and latest_ser_dag.dag_hash == new_dag_hash
             and latest_ser_dag.processor_subdir == processor_subdir
             and latest_ser_dag.bundle_name == bundle_name
+            and getattr(latest_ser_dag, 'bundle_version', None) == bundle_version
         ):
             log.debug("Serialized DAG (%s) is unchanged. Skipping writing to DB", dag.dag_id)
             return False
@@ -81,26 +83,30 @@ def patched_write_dag(
             latest_ser_dag = SerializedDagModel(
                 dag=dag,
                 processor_subdir=processor_subdir,
-                bundle_name=bundle_name
+                bundle_name=bundle_name,
+                bundle_version=bundle_version
             )
             session.add(latest_ser_dag)
             session.flush()
-            log.debug("Successfully serialized new DAG: %s (bundle: %s)", dag.dag_id, bundle_name or "default")
+            log.debug("Successfully serialized new DAG: %s (bundle: %s@%s)", dag.dag_id, bundle_name or "default", bundle_version or "latest")
             return True
        
         # Update existing entry
         latest_ser_dag.fileloc = dag.fileloc
         latest_ser_dag.fileloc_hash = SerializedDagModel.dag_fileloc_hash(dag.fileloc)
-        latest_ser_dag.data_compressed = zlib.compress(dag_data_json, level=6)  # Assuming compression is enabled; adjust if not
+        # Assuming compression is enabled (default in Airflow 3.x)
+        latest_ser_dag.data_compressed = zlib.compress(dag_data_json, level=6)
         latest_ser_dag.last_updated = timezone.utcnow()
         latest_ser_dag.dag_hash = new_dag_hash
         latest_ser_dag.processor_subdir = processor_subdir
         latest_ser_dag.bundle_name = bundle_name
+        if hasattr(latest_ser_dag, 'bundle_version'):
+            latest_ser_dag.bundle_version = bundle_version
        
         # Flush changes
         session.flush()
        
-        log.debug("Successfully serialized DAG: %s (bundle: %s)", dag.dag_id, bundle_name or "default")
+        log.debug("Successfully serialized DAG: %s (bundle: %s@%s)", dag.dag_id, bundle_name or "default", bundle_version or "latest")
         return True
        
     except Exception as e:
@@ -115,9 +121,9 @@ def patched_write_dag(
         return False
 # Apply the patch at module load time
 log.info("=" * 80)
-log.info("🔧 Applying SerializedDagModel.write_dag patch v1.4 (Airflow 3.1.1)")
+log.info("🔧 Applying SerializedDagModel.write_dag patch v1.5 (Airflow 3.1.5)")
 log.info(" This fixes: AttributeError: 'NoneType' object has no attribute '_data'")
-log.info(" Optimized field setting for compatibility")
+log.info(" Full support for bundle_name and bundle_version")
 log.info("=" * 80)
 SerializedDagModel.write_dag = staticmethod(patched_write_dag)
 class SerializedDagFixPlugin(AirflowPlugin):
