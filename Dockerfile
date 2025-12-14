@@ -1,6 +1,5 @@
-# Use a stable Airflow version instead of 'latest' which may have bugs
-# Airflow 2.10.4 is stable and has fixes for serialization issues
-FROM apache/airflow:2.10.4-python3.12
+# Use Airflow image with explicit Python 3.12 to match your expected path
+FROM apache/airflow:latest-python3.12
 
 # Install dependencies as root
 USER root
@@ -22,16 +21,12 @@ WORKDIR /home/airflow
 # Copy Poetry configuration files
 COPY --chown=airflow:airflow pyproject.toml poetry.lock* ./
 
-# Install dependencies to the airflow user's site-packages
+# Install dependencies to the airflow user's site-packages (use verbose for debugging if needed)
 RUN poetry config virtualenvs.create false \
     && poetry install --only main --no-interaction --no-ansi
 
 # Verify installed packages
 RUN pip list --user > /home/airflow/installed_packages.txt
-
-# Create a patch file for the serialization bug if it still exists
-# This will be loaded by Airflow's plugin system
-COPY --chown=airflow:airflow plugins/serialized_dag_fix.py /opt/airflow/plugins/
 
 # Set Airflow working directory
 WORKDIR /opt/airflow
