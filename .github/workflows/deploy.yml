@@ -91,6 +91,11 @@ jobs:
         with:
           python-version: '3.x'
 
+      # - name: Install rsync
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y rsync
+
       - name: Deploy DAGs via rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -123,23 +128,23 @@ jobs:
             cd /opt/app
             docker compose pull
             docker compose up -d
-            
-            echo "Waiting for services to stabilize..."
-            sleep 10
 
-      - name: Verify deployment
+      - name: Restart Airflow services
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.ELESTIO_HOST }}
           username: ${{ secrets.ELESTIO_USER }}
           key: ${{ secrets.ELESTIO_SSH_KEY }}
           script: |
+            echo "Restarting Airflow core services..."
             cd /opt/app
             
+            # Only restart services needed for DAG processing
+            docker compose restart airflow-scheduler airflow-dag-processor
+            
+            # Wait a bit and check services are healthy
+            sleep 10
             echo "Service status:"
             docker compose ps
-            
-            echo ""
-            echo "✅ DAGs deployed successfully!"
-            echo "📋 DAGs will be parsed automatically within 30 seconds"
-            echo "🔍 Check Airflow UI for new/updated DAGs"
+
+            echo "DAGs deployed successfully!"
