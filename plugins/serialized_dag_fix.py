@@ -1,8 +1,8 @@
 """
 Airflow Plugin: Fix for SerializedDagModel race condition bug
 This patches the write_dag method to handle None values and concurrent writes properly.
-Author: System Fix
-Version: 1.5 - Fully compatible with Airflow 3.1.5 (added bundle_version support)
+Author: Siteship System Fix
+Version: 1.6 - Optimized for Airflow 3.1.1+ (robust bundle support)
 """
 from __future__ import annotations
 import json
@@ -99,7 +99,10 @@ def patched_write_dag(
         latest_ser_dag.last_updated = timezone.utcnow()
         latest_ser_dag.dag_hash = new_dag_hash
         latest_ser_dag.processor_subdir = processor_subdir
-        latest_ser_dag.bundle_name = bundle_name
+        
+        # Safety check for Airflow 3.x+ fields
+        if hasattr(latest_ser_dag, 'bundle_name'):
+            latest_ser_dag.bundle_name = bundle_name
         if hasattr(latest_ser_dag, 'bundle_version'):
             latest_ser_dag.bundle_version = bundle_version
        
