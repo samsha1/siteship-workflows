@@ -18,6 +18,9 @@ celery = "^5.4.0"
 redis = "^5.0.0"
 psycopg2-binary = "^2.9.9"
 apache-airflow-providers-github = "^2.9.1"
+apache-airflow-providers-postgres = "^5.10.0"
+apache-airflow-providers-redis = "^3.6.0"
+apache-airflow-providers-celery = "^3.6.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

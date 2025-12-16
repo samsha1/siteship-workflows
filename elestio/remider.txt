@@ -1,0 +1,6 @@
+1. Add rsync rsa elestio SSH private key to github secrets
+    - root
+    - host.elestio.app
+     https://grok.com/c/98854428-960e-4f00-baff-16a5cdb5ff1f?rid=c3ab54e7-4be0-49b8-8cd7-096c67283cae
+2. One line extra at end in private ssh file
+3. Install rsync to elestio

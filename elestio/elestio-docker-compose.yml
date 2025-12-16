@@ -1,183 +1,208 @@
-# Complete docker-compose.yml configuration to fix the serialization issue
-
-version: '3.8'
-
-x-airflow-common:
-  &airflow-common
-  image: ghcr.io/samsha1/siteship-workflows:latest
-  environment:
-    # Database connection
-    - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-    - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
-    - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
-    - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
-    
-    # Core settings
-    - AIRFLOW__CORE__STORE_SERIALIZED_DAGS=True
-    - AIRFLOW__CORE__STORE_DAG_CODE=True
-    - AIRFLOW__CORE__LOAD_EXAMPLES=True
-    - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
-    
-    # DAG Processor settings (CRITICAL - fixes the deprecated warning)
-    - AIRFLOW__DAG_PROCESSOR__REFRESH_INTERVAL=30
-    
-    # Serialization intervals (CRITICAL - prevents race condition)
-    - AIRFLOW__CORE__MIN_SERIALIZED_DAG_UPDATE_INTERVAL=30
-    - AIRFLOW__CORE__MIN_SERIALIZED_DAG_FETCH_INTERVAL=10
-    
-    # Database pool settings (CRITICAL - handles concurrent connections)
-    - AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_SIZE=5
-    - AIRFLOW__DATABASE__SQL_ALCHEMY_MAX_OVERFLOW=10
-    - AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_RECYCLE=3600
-    - AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_PRE_PING=True
-    - AIRFLOW__DATABASE__SQL_ALCHEMY_POOL_ENABLED=True
-    
-    # Scheduler settings (IMPORTANT - use standalone dag processor)
-    - AIRFLOW__SCHEDULER__STANDALONE_DAG_PROCESSOR=True
-    - AIRFLOW__SCHEDULER__PARSING_PROCESSES=2
-    - AIRFLOW__SCHEDULER__FILE_PARSING_SORT_MODE=modified_time
-    - AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL=30
-    
-    # Celery worker settings
-    - AIRFLOW__CELERY__WORKER_CONCURRENCY=16
-    
-    # Logging
-    - AIRFLOW__LOGGING__LOGGING_LEVEL=INFO
-    - AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS=False
-    
+version: "3.5"
+x-airflow-common: &airflow-common
+  image: apache/airflow:${SOFTWARE_VERSION_TAG}
+  environment: &airflow-common-env
+    AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://airflow-apiserver:8080/execution/"
+    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}
+    # For backward compatibility, with Airflow <2.3
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}
+    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+    AIRFLOW__CORE__FERNET_KEY: ""
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__LOAD_EXAMPLES: "true"
+    AIRFLOW__WEBSERVER__WARN_DEPLOYMENT_EXPOSURE: "false"
+    AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"
+    # yamllint disable rule:line-length
+    # Use simple http server on scheduler for health checks
+    # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server
+    # yamllint enable rule:line-length
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
+    AIRFLOW_CONFIG: "/opt/airflow/config/airflow.cfg"
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./config:/opt/airflow/config
-  depends_on:
-    postgres:
-      condition: service_healthy
-    redis:
-      condition: service_healthy
+  user: "${AIRFLOW_UID:-50000}:0"
 
 services:
   postgres:
     image: elestio/postgres:17
+    hostname: postgres
     environment:
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
-      - POSTGRES_DB=airflow
-      - POSTGRES_MAX_CONNECTIONS=100
-      - POSTGRES_SHARED_BUFFERS=256MB
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - postgres-db-volume:/var/lib/postgresql/data
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - 172.17.0.1:30782:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
-      interval: 10s
+      interval: 5s
       retries: 5
-      start_period: 5s
     restart: always
 
   redis:
     image: elestio/redis:7.2
-    expose:
-      - 6379
+    hostname: redis
+    ports:
+      - 172.17.0.1:64408:6379
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
+      interval: 5s
       timeout: 30s
       retries: 50
+    restart: always
+
+  airflow-apiserver:
+    <<: *airflow-common
+    command: api-server
+    ports:
+      - "172.17.0.1:8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
       start_period: 30s
+    restart: always
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    hostname: airflow-scheduler
     restart: always
 
   airflow-dag-processor:
     <<: *airflow-common
     command: dag-processor
-    restart: always
     healthcheck:
-      test: ["CMD-SHELL", "airflow jobs check --job-type DagProcessorJob --hostname \"$${HOSTNAME}\""]
+      test:
+        [
+          "CMD-SHELL",
+          'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"',
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 30s
-
-  airflow-scheduler:
-    <<: *airflow-common
-    command: scheduler
     restart: always
-    depends_on:
-      airflow-dag-processor:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
 
   airflow-worker:
     <<: *airflow-common
     command: celery worker
+    hostname: airflow-worker
     restart: always
-    depends_on:
-      airflow-scheduler:
-        condition: service_healthy
-    healthcheck:
-      test:
-        - "CMD-SHELL"
-        - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+    environment:
+      <<: *airflow-common-env
+      # Required to handle warm shutdown of the celery workers properly
+      # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
+      DUMB_INIT_SETSID: "0"
 
   airflow-triggerer:
     <<: *airflow-common
     command: triggerer
     restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "airflow jobs check --job-type TriggererJob --hostname \"$${HOSTNAME}\""]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
 
-  airflow-apiserver:
+  airflow-init:
     <<: *airflow-common
-    command: webserver
-    ports:
-      - "8080:8080"
-    restart: always
-    depends_on:
-      airflow-scheduler:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+    # command: version
+    hostname: airflow-init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        if [[ -z "${AIRFLOW_UID}" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: AIRFLOW_UID not set!\e[0m"
+          echo "If you are on Linux, you SHOULD follow the instructions below to set "
+          echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
+          echo "For other operating systems you can get rid of the warning with manually created .env file:"
+          echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#setting-the-right-airflow-user"
+          echo
+        fi
+        one_meg=1048576
+        mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
+        cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
+        disk_available=$$(df / | tail -1 | awk '{print $$4}')
+        warning_resources="false"
+        if (( mem_available < 4000 )) ; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
+          echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
+          echo
+          warning_resources="true"
+        fi
+        if (( cpus_available < 2 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
+          echo "At least 2 CPUs recommended. You have $${cpus_available}"
+          echo
+          warning_resources="true"
+        fi
+        if (( disk_available < one_meg * 10 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
+          echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
+          echo
+          warning_resources="true"
+        fi
+        if [[ $${warning_resources} == "true" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
+          echo "Please follow the instructions to increase amount of resources available:"
+          echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
+          echo
+        fi
+        mkdir -p /sources/logs /sources/dags /sources/plugins
+        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        exec /entrypoint airflow version
+    # yamllint enable rule:line-length
+    environment:
+      <<: *airflow-common-env
+      # _AIRFLOW_DB_UPGRADE: 'true'
+      _AIRFLOW_DB_MIGRATE: "true"
+      _AIRFLOW_WWW_USER_CREATE: "true"
+      _AIRFLOW_WWW_USER_USERNAME: ${ADMIN_EMAIL}
+      _AIRFLOW_WWW_USER_EMAIL: ${ADMIN_EMAIL}
+      _AIRFLOW_WWW_USER_PASSWORD: ${ADMIN_PASSWORD}
+    # user: "0:0"
+    volumes:
+      - ./sources:/sources
+
+  airflow-cli:
+    <<: *airflow-common
+    profiles:
+      - debug
+    environment:
+      <<: *airflow-common-env
+      CONNECTION_CHECK_MAX_COUNT: "0"
+    # Workaround for entrypoint issue. See: https://github.com/apache/airflow/issues/16252
+    command:
+      - bash
+      - -c
+      - airflow
 
   flower:
     <<: *airflow-common
     command: celery flower
+    hostname: flower
     ports:
-      - "5555:5555"
+      - "172.17.0.1:5555:5555"
     restart: always
-    depends_on:
-      redis:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-    ports:
-      - "8080:8080"
     restart: always
-
-volumes:
-  postgres-db-volume:
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASSWORD}
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - "172.17.0.1:23983:8080"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
