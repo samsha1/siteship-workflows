@@ -1,5 +1,5 @@
-# Pin to stable Airflow version that mastches the Poetry dependency
-FROM apache/airflow:latest-python3.13
+# Pin to stable Airflow version
+FROM apache/airflow:2.10.4-python3.12
 
 # Install dependencies as root
 USER root
@@ -11,7 +11,7 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python
     && chmod -R 755 /opt/poetry \
     && ln -s /opt/poetry/bin/poetry /usr/local/bin/poetry
 
-# Verify Poetry and Python version (for debugging)
+# Verify Poetry and Python version
 RUN poetry --version && python3 --version
 
 # Switch to airflow user for package installation
@@ -21,12 +21,12 @@ WORKDIR /home/airflow
 # Copy Poetry configuration files
 COPY --chown=airflow:airflow pyproject.toml poetry.lock* ./
 
-# Install dependencies to the airflow user's site-packages (use verbose for debugging if needed)
+# Configure Poetry and install dependencies
 RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction --no-ansi
+    && poetry install --only main --no-interaction --no-ansi --no-root
 
 # Verify installed packages
-RUN pip list --user > /home/airflow/installed_packages.txt
+RUN pip list > /home/airflow/installed_packages.txt
 
 # Set Airflow working directory
 WORKDIR /opt/airflow
