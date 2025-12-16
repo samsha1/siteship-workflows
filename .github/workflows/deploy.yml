@@ -111,6 +111,18 @@ jobs:
           remote_user: ${{ secrets.ELESTIO_USER }}
           remote_key: ${{ secrets.ELESTIO_SSH_KEY }}
 
+      - name: Restart Airflow services to load plugins
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.ELESTIO_HOST }}
+          username: ${{ secrets.ELESTIO_USER }}
+          key: ${{ secrets.ELESTIO_SSH_KEY }}
+          script: |
+            echo "🔄 Restarting Airflow Scheduler and Processor to apply changes..."
+            cd /opt/app
+            docker compose restart airflow-dag-processor airflow-scheduler
+            echo "✅ Services restarted."
+
       - name: Update Docker image and config if built
         if: needs.check-changes.outputs.docker-build == 'true'
         uses: appleboy/ssh-action@v1.2.0
