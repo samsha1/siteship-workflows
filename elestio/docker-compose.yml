@@ -217,6 +217,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASSWORD}
       PGADMIN_LISTEN_PORT: 8080
+      PYTHONWARNINGS: "ignore::SyntaxWarning"
     ports:
       - "172.17.0.1:23983:8080"
     volumes:
