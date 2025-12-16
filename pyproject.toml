@@ -11,14 +11,15 @@ python = ">=3.11,<3.14"
 requests = "^2.32.4"
 PyGithub = "^2.6.1"
 python-dotenv = "^1.0.1"
-# Remove apache-airflow - already in base image
-# apache-airflow = {version = "3.1.1", extras = ["sqlite"]}
 apache-airflow-providers-fab = "^2.3.0"
 twilio = "^9.6.5"
 celery = "^5.4.0"
 redis = "^5.0.0"
 psycopg2-binary = "^2.9.9"
 apache-airflow-providers-github = "^2.9.1"
+apache-airflow-providers-postgres = "^6.5.1"
+apache-airflow-providers-redis = "^4.4.1"
+apache-airflow-providers-celery = "^3.14.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
