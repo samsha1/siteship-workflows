@@ -1,5 +1,4 @@
-# Pin to stable Airflow version
-FROM apache/airflow:latest-python3.13
+FROM apache/airflow:latest-python3.12
 
 # Install dependencies as root
 USER root
