@@ -1,5 +1,5 @@
 # Pin to stable Airflow version that mastches the Poetry dependency
-FROM apache/airflow:3.1.1-python3.12
+FROM apache/airflow:latest-python3.13
 
 # Install dependencies as root
 USER root
